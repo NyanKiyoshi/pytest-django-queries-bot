@@ -43,7 +43,7 @@ def configure_jinja():
 
 
 def register_routes():
-    app.add_url_rule("/webhook", "webhook", webhook_handler)
+    app.add_url_rule("/webhook", "webhook", webhook_handler, methods=["POST"])
 
 
 if __name__ == "__main__":

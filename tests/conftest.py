@@ -1,10 +1,19 @@
 from os.path import dirname, join, realpath
+from typing import Optional
 from unittest import mock
 
 import pytest
 from jinja2 import StrictUndefined
 
 from pytest_django_queries_bot.application import create_app
+
+
+def get_headers(*, event: Optional[str]) -> dict:
+    headers = {"Content-Type": "application/json"}
+    if event:
+        headers["X-Github-Event"] = event
+
+    return headers
 
 
 @pytest.fixture(scope="session")

@@ -1,0 +1,6 @@
+.*/
+__pycache__/
+*egg*/
+
+.DS_Store
+*.py[oc]

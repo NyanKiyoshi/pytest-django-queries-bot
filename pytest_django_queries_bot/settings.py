@@ -18,5 +18,9 @@ def getenv_ast(name, default_value):
 
 DEBUG = getenv_ast("DEBUG", True)
 SECRET_KEY = getenv("SECRET_KEY", "secret")
+GITHUB_SECRET_KEY = getenv("GITHUB_SECRET_KEY", None)
+
+if GITHUB_SECRET_KEY:
+    GITHUB_SECRET_KEY = bytes(GITHUB_SECRET_KEY, "utf-8")
 
 TEMPLATE_FOLDER = os.path.join(PROJECT_ROOT, "templates")

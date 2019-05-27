@@ -8,8 +8,8 @@ from jinja2 import StrictUndefined
 from pytest_django_queries_bot.application import create_app
 
 
-def get_headers(*, event: Optional[str]) -> dict:
-    headers = {"Content-Type": "application/json"}
+def get_headers(*, event: Optional[str], signature: str = "dummy") -> dict:
+    headers = {"Content-Type": "application/json", "HTTP_X_HUB_SIGNATURE": signature}
     if event:
         headers["X-Github-Event"] = event
 
@@ -43,3 +43,17 @@ def pushed_app(app):
 @pytest.fixture
 def client(pushed_app):
     return pushed_app.test_client()
+
+
+@pytest.fixture
+def config(pushed_app):
+    """Create a safe copy of the configuration.
+    Note: it's not a deep copy."""
+    original = pushed_app.config.copy()
+    yield pushed_app.config
+    pushed_app.config = original
+
+
+@pytest.fixture
+def dummy_payload():
+    return "{}"

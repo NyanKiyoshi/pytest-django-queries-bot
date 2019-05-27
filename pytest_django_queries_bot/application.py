@@ -4,7 +4,7 @@ import jinja2
 from flask import Flask
 
 from .core.extensions import app
-from .webhook import handle_request as webhook_handler
+from .webhook import dispatch as webhook_handler
 
 
 def get_config_path():

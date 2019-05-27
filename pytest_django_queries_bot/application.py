@@ -3,7 +3,7 @@ import os.path
 import jinja2
 from flask import Flask
 
-from .core.extensions import app
+from .core.extensions import app, celery
 from .webhook import dispatch as webhook_handler
 
 
@@ -27,6 +27,7 @@ def create_app() -> Flask:
 
 def configure_extensions():
     configure_jinja()
+    configure_celery()
     register_routes()
 
 
@@ -42,9 +43,16 @@ def configure_jinja():
     app.jinja_env.undefined = undefined_logger
 
 
+def configure_celery():
+    _celery_prefix = "CELERY_"
+    _celery_prefix_len = len(_celery_prefix)
+    celeryconf = {
+        k[_celery_prefix_len:].lower(): v
+        for k, v in app.config.items()
+        if k.startswith(_celery_prefix)
+    }
+    celery.conf.update(celeryconf)
+
+
 def register_routes():
     app.add_url_rule("/webhook", "webhook", webhook_handler, methods=["POST"])
-
-
-if __name__ == "__main__":
-    create_app().run()

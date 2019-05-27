@@ -24,3 +24,12 @@ if GITHUB_SECRET_KEY:
     GITHUB_SECRET_KEY = bytes(GITHUB_SECRET_KEY, "utf-8")
 
 TEMPLATE_FOLDER = os.path.join(PROJECT_ROOT, "templates")
+
+CELERY_BROKER_URL = getenv("CELERY_BROKER_URL", None)
+CELERY_RESULT_BACKEND = getenv("CELERY_RESULT_BACKEND", None)
+CELERY_TASK_ALWAYS_EAGER = not CELERY_BROKER_URL
+CELERY_TASK_ANNOTATIONS = {
+    "webhooks.tasks.diff_generator": {
+        "rate_limit": getenv("CELERY_TASK_ANNOTATIONS", "10/s")
+    }
+}

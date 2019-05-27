@@ -30,6 +30,6 @@ CELERY_RESULT_BACKEND = getenv("CELERY_RESULT_BACKEND", None)
 CELERY_TASK_ALWAYS_EAGER = not CELERY_BROKER_URL
 CELERY_TASK_ANNOTATIONS = {
     "webhooks.tasks.diff_generator": {
-        "rate_limit": getenv("CELERY_TASK_ANNOTATIONS", "10/s")
+        "rate_limit": getenv("CELERY_TASK_DIFF_RATE_LIMIT", "5/s")
     }
 }

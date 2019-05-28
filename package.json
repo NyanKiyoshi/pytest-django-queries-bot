@@ -1,0 +1,10 @@
+{
+  "name": "pytest-queries-bot",
+  "version": "1.0.0",
+  "description": "",
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "serverless": "^1.43.0"
+  }
+}

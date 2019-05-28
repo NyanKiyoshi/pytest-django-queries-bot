@@ -14,7 +14,10 @@ var hmacflags = []struct {
 }{
 	{"secret", true},
 	{"invalid", false},
+	{"sha1=858da8837b87f04b052c0f6e954c3f7bbe081165", false},
+	{"858da8837b87f04b052c0f6e954c3f7bbe081164", false},
 }
+
 func TestCheckHMAC(t *testing.T) {
 	for _, tt := range hmacflags {
 		t.Run(tt.secret, func(t *testing.T) {

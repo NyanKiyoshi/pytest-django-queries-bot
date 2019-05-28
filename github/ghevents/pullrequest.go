@@ -3,8 +3,8 @@ package ghevents
 import (
 	"encoding/json"
 	"errors"
-	"pytest-queries-bot/pytestqueries/github/awstypes"
 	"github.com/google/go-github/github"
+	"pytest-queries-bot/pytestqueries/github/awstypes"
 	"pytest-queries-bot/pytestqueries/github/models"
 )
 
@@ -37,7 +37,7 @@ func pullrequest(request *awstypes.Request) (awstypes.Response, error) {
 	if err != nil {
 		return awstypes.Response{
 			StatusCode: 500,
-			Body: err.Error(),
+			Body:       err.Error(),
 		}, err
 	}
 

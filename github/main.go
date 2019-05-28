@@ -8,16 +8,16 @@ import (
 	"pytest-queries-bot/pytestqueries/github/security"
 )
 
-func getGHSecretKey() []byte {
-	return []byte(os.Getenv("GITHUB_SECRET_KEY"))
-}
+const HmacHeader string = "HTTP_X_HUB_SIGNATURE"
+
+var secretKey = []byte(os.Getenv("GITHUB_SECRET_KEY"))
 
 // Handler is our lambda handler invoked by the `lambda.Start` function call
 func Handler(request awstypes.Request) (awstypes.Response, error) {
-	signature, ok := request.Headers["HTTP_X_HUB_SIGNATURE"]
-	if !(ok && security.CheckHMAC([]byte(signature), []byte(request.Body), getGHSecretKey())) {
+	signature, ok := request.Headers[HmacHeader]
+	if !(ok && security.CheckHMAC([]byte(signature), []byte(request.Body), secretKey)) {
 		return awstypes.Response{
-			StatusCode: 400,
+			StatusCode: 403,
 		}, nil
 	}
 

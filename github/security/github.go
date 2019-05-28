@@ -6,18 +6,23 @@ import (
 	"encoding/hex"
 )
 
-var prefix = []byte("sha1=")
-var size = len(prefix) + sha1.Size
+// Prefix contains GitHub's HMAC signature prefix
+var Prefix = []byte("sha1=")
+
+var expectedSignatureSize = len(Prefix) + sha1.Size
+
+func NewHMAC(body []byte, secret []byte) string {
+	mac := hmac.New(sha1.New, secret)
+	mac.Write(body)
+	return hex.EncodeToString(mac.Sum(nil))
+}
 
 func CheckHMAC(receivedSignature []byte, body []byte, secret []byte) bool {
-	if len(body) == size {
+	if len(receivedSignature) == expectedSignatureSize {
 		return false
 	}
 
-	sig := receivedSignature[len(prefix):]
-
-	mac := hmac.New(sha1.New, secret)
-	mac.Write(body)
-	expected := []byte(hex.EncodeToString(mac.Sum(nil)))
+	sig := receivedSignature[len(Prefix):]
+	expected := []byte(NewHMAC(body, secret))
 	return hmac.Equal(sig, expected)
 }

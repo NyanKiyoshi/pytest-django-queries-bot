@@ -14,7 +14,7 @@ func synchronizePR(data *github.PullRequest) error {
 	}
 
 	event := models.Event{HashSHA1: *data.Head.SHA}
-	return event.Table().Put(event).Run()
+	return models.EventTable().Put(event).Run()
 }
 
 func pullrequest(request *awstypes.Request) (awstypes.Response, error) {

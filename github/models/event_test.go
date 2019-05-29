@@ -6,7 +6,6 @@ import (
 )
 
 func TestEvent_Table(t *testing.T) {
-	event := Event{}
-	table := event.Table()
+	table := EventTable()
 	assert.Equal(t, tableName, table.Name(), "Unexpected table name")
 }

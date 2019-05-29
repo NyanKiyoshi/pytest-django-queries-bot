@@ -1,9 +1,10 @@
 package main
 
 import (
-	"context"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
+	"pytest-queries-bot/pytestqueries/github/awstypes"
+	"pytest-queries-bot/pytestqueries/github/models"
 )
 
 // Response is of type APIGatewayProxyResponse since we're leveraging the
@@ -13,7 +14,17 @@ import (
 type Response events.APIGatewayProxyResponse
 
 // Handler is our lambda handler invoked by the `lambda.Start` function call
-func Handler(ctx context.Context) (Response, error) {
+func Handler(request awstypes.Request) (Response, error) {
+	event, err := models.CheckEvent(&request)
+
+	if err != nil {
+		return Response{StatusCode: 400, Body: err.Error()}, err
+	}
+
+	if event.DiffUploaded {
+		return Response{StatusCode: 403, Body: "A diff was already uploaded"}, nil
+	}
+
 	return Response{StatusCode: 404}, nil
 }
 

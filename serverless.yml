@@ -53,18 +53,34 @@ package:
    - ./bin/**
 
 functions:
-  hello:
+  github:
     handler: bin/github
     events:
       - http:
-          path: github
-          method: get
-  world:
-    handler: bin/travis
+          path: ${env:GITHUB_WEBHOOK_URL}
+          method: post
+    environmentVariables:
+      AWS_DYNAMO_REGION: ${env:AWS_DYNAMO_REGION}
+      GITHUB_SECRET_KEY: ${env:GITHUB_SECRET_KEY}
+
+  uploader:
+    handler: bin/uploader
     events:
       - http:
-          path: travis
-          method: get
+          path: upload/
+          method: post
+    environmentVariables:
+      S3_BUCKET: ${env:S3_BUCKET}
+
+  diff:
+    handler: bin/diff-uploader
+    events:
+      - http:
+          path: diff/
+          method: post
+    environmentVariables:
+      GITHUB_SECRET_KEY: ${env:GITHUB_SECRET_KEY}
+      S3_BUCKET: ${env:S3_BUCKET}
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events

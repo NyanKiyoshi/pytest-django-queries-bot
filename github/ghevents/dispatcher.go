@@ -4,7 +4,7 @@ import (
 	"pytest-queries-bot/pytestqueries/github/awstypes"
 )
 
-const GithubEventHeader string = "X-Github-Event"
+const GithubEventHeader string = "X-GitHub-Event"
 
 func Dispatch(request *awstypes.Request) (awstypes.Response, error) {
 	event := request.Headers[GithubEventHeader]

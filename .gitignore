@@ -25,3 +25,6 @@ vendor
 
 # MacOS files
 .DS*
+
+# Environment files
+*.env

@@ -5,8 +5,8 @@ import (
 	"testing"
 )
 
-var message = []byte("Hello World")
-var signature = []byte("sha1=858da8837b87f04b052c0f6e954c3f7bbe081164")
+var message = "Hello World"
+var signature = "sha1=858da8837b87f04b052c0f6e954c3f7bbe081164"
 
 var hmacflags = []struct {
 	secret string
@@ -19,9 +19,10 @@ var hmacflags = []struct {
 }
 
 func TestCheckHMAC(t *testing.T) {
+	var ok bool
 	for _, tt := range hmacflags {
 		t.Run(tt.secret, func(t *testing.T) {
-			ok := CheckHMAC(signature, message, []byte(tt.secret))
+			ok = VerifySignature([]byte(tt.secret), signature, []byte(message))
 			assert.Equal(t, tt.result, ok, "The signatures should have matched")
 		})
 	}

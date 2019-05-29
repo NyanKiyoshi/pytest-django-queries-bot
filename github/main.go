@@ -8,16 +8,31 @@ import (
 	"pytest-queries-bot/pytestqueries/github/security"
 )
 
-const HmacHeader string = "HTTP_X_HUB_SIGNATURE"
+const HmacHeader string = "X-Hub-Signature"
 
 var secretKey = []byte(os.Getenv("GITHUB_SECRET_KEY"))
 
 // Handler is our lambda handler invoked by the `lambda.Start` function call
 func Handler(request awstypes.Request) (awstypes.Response, error) {
 	signature, ok := request.Headers[HmacHeader]
-	if !(ok && security.CheckHMAC([]byte(signature), []byte(request.Body), secretKey)) {
+	if !ok {
 		return awstypes.Response{
 			StatusCode: 403,
+			Body:       `{"message": "authentication failed: missing header"}`,
+			Headers: map[string]string{
+				"Content-Type": "application/json",
+			},
+		}, nil
+	}
+
+	ok = security.VerifySignature(secretKey, signature, []byte(request.Body))
+	if !ok {
+		return awstypes.Response{
+			StatusCode: 403,
+			Body:       `{"message": "authentication failed"}`,
+			Headers: map[string]string{
+				"Content-Type": "application/json",
+			},
 		}, nil
 	}
 

@@ -21,6 +21,7 @@ frameworkVersion: ">=1.28.0 <2.0.0"
 provider:
   name: aws
   runtime: go1.x
+  memorySize: 128
 
 # you can overwrite defaults here
 #  stage: dev
@@ -59,8 +60,8 @@ functions:
       - http:
           path: ${env:GITHUB_WEBHOOK_URL}
           method: post
-    environmentVariables:
-      AWS_DYNAMO_REGION: ${env:AWS_DYNAMO_REGION}
+    environment:
+      DYNAMO_AWS_REGION: ${env:DYNAMO_AWS_REGION}
       GITHUB_SECRET_KEY: ${env:GITHUB_SECRET_KEY}
 
   uploader:
@@ -69,8 +70,9 @@ functions:
       - http:
           path: upload/
           method: post
-    environmentVariables:
+    environment:
       S3_BUCKET: ${env:S3_BUCKET}
+      S3_AWS_REGION: ${env:S3_AWS_REGION}
       S3_AWS_ACCESS_KEY_ID: ${env:S3_AWS_ACCESS_KEY_ID}
       S3_AWS_SECRET_KEY: ${env:S3_AWS_SECRET_KEY}
       S3_AWS_SESSION_TOKEN: ${env:S3_AWS_SESSION_TOKEN}
@@ -82,9 +84,28 @@ functions:
       - http:
           path: diff/
           method: post
-    environmentVariables:
+    environment:
       GITHUB_SECRET_KEY: ${env:GITHUB_SECRET_KEY}
       S3_BUCKET: ${env:S3_BUCKET}
+      S3_AWS_REGION: ${env:S3_AWS_REGION}
+
+resources:
+  Resources:
+    EventsDynamoDBTable:
+      Type: 'AWS::DynamoDB::Table'
+      Properties:
+        AttributeDefinitions:
+          -
+            AttributeName: sha1_hash
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: sha1_hash
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: "gh_hooks_events"
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events

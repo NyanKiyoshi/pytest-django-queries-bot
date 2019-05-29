@@ -9,7 +9,7 @@ import (
 
 // Get retrieves the AWS Dynamo DB
 func Get() *dynamo.DB {
-	region := os.Getenv("AWS_DYNAMO_REGION")
+	region := os.Getenv("DYNAMO_AWS_REGION")
 	db := dynamo.New(session.New(), &aws.Config{Region: &region})
 	return db
 }

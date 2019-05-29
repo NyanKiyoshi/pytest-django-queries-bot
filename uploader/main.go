@@ -28,7 +28,7 @@ const SecretKeyHeaderName = "X-Upload-Secret-Key"
 var ExpectedSecretKey = []byte(os.Getenv("REQUIRED_SECRET_KEY"))
 
 // Various S3 information.
-var s3BucketRegion = aws.String(os.Getenv("S3_BUCKET_REGION"))
+var s3BucketRegion = aws.String(os.Getenv("S3_AWS_REGION"))
 var s3BucketName = os.Getenv("S3_BUCKET")
 
 const jsonContentType = "application/json"

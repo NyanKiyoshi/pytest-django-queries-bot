@@ -28,3 +28,6 @@ vendor
 
 # Environment files
 *.env
+
+# Do not commit generated code
+generated/

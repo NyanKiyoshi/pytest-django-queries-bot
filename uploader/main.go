@@ -8,9 +8,9 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
-	"os"
 	"pytest-queries-bot/pytestqueries/github/awstypes"
 	"pytest-queries-bot/pytestqueries/github/models"
+	"pytest-queries-bot/pytestqueries/uploader/generated"
 )
 
 // Response is of type APIGatewayProxyResponse since we're leveraging the
@@ -25,11 +25,7 @@ const SecretKeyHeaderName = "X-Upload-Secret-Key"
 
 // ExpectedSecretKey contains the expected secret key to receive
 // that will allow the request to be handled.
-var ExpectedSecretKey = []byte(os.Getenv("REQUIRED_SECRET_KEY"))
-
-// Various S3 information.
-var s3BucketRegion = aws.String(os.Getenv("S3_AWS_REGION"))
-var s3BucketName = os.Getenv("S3_BUCKET")
+var ExpectedSecretKey = []byte(generated.RequiredSecretKey)
 
 const jsonContentType = "application/json"
 
@@ -60,11 +56,11 @@ func Handler(ctx awstypes.Request) (Response, error) {
 
 	// Create a session to AWS to upload to the S3 bucket
 	awsSession, err := session.NewSession(&aws.Config{
-		Region: s3BucketRegion,
+		Region: &generated.S3BucketRegion,
 		Credentials: credentials.NewStaticCredentials(
-			os.Getenv("S3_AWS_ACCESS_KEY_ID"),
-			os.Getenv("S3_AWS_SECRET_KEY"),
-			os.Getenv("S3_AWS_SESSION_TOKEN"),
+			generated.S3AWSAccessKeyID,
+			generated.S3AWSSecretKey,
+			generated.S3AwsSessionToken,
 		),
 	})
 
@@ -77,7 +73,7 @@ func Handler(ctx awstypes.Request) (Response, error) {
 	s3ContentType := string(jsonContentType) // copy the string because AWS wants a pointer
 
 	if _, err := uploader.Upload(&s3manager.UploadInput{
-		Bucket:      &s3BucketName,
+		Bucket:      &generated.S3BucketName,
 		Key:         &event.HashSHA1,
 		ContentType: &s3ContentType,
 	}); err != nil {

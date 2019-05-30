@@ -7,8 +7,8 @@ import (
 	"strings"
 )
 
-// Prefix contains GitHub's HMAC signature prefix
-const Prefix = "sha1="
+// SignaturePrefix contains GitHub's HMAC signature prefix
+const SignaturePrefix = "sha1="
 
 func NewHMAC(body []byte, secret []byte) string {
 	mac := hmac.New(sha1.New, secret)
@@ -23,10 +23,9 @@ func signBody(secret, body []byte) []byte {
 }
 
 func VerifySignature(secret []byte, signature string, body []byte) bool {
-	const signaturePrefix = "sha1="
 	const signatureLength = 45 // len(SignaturePrefix) + len(hex(sha1))
 
-	if len(signature) != signatureLength || !strings.HasPrefix(signature, signaturePrefix) {
+	if len(signature) != signatureLength || !strings.HasPrefix(signature, SignaturePrefix) {
 		return false
 	}
 

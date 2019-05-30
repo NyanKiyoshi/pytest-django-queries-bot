@@ -18,14 +18,19 @@ service: pytestqueries # NOTE: update this with your service name
 # frameworkVersion: "=X.X.X"
 frameworkVersion: ">=1.28.0 <2.0.0"
 
+custom:
+  defaultRegion: us-east-1
+  defaultEnvironmentGroup: dev
+  region: ${env:AWS_DEFAULT_REGION, self:custom.defaultRegion}
+  stage: ${opt:stage, env:USER}
+  s3Bucket: ${env:S3_BUCKET}
+
 provider:
   name: aws
   runtime: go1.x
   memorySize: 128
-
-# you can overwrite defaults here
-#  stage: dev
-#  region: us-east-1
+  region: ${self:custom.region}
+  stage: ${self:custom.stage}
 
 # you can add statements to the Lambda function's IAM Role here
 #  iamRoleStatements:
@@ -43,10 +48,6 @@ provider:
 #            - "Ref" : "ServerlessDeploymentBucket"
 #            - "/*"
 
-# you can define service wide environment variables here
-#  environment:
-#    variable1: value1
-
 package:
  exclude:
    - ./**
@@ -56,6 +57,7 @@ package:
 functions:
   github:
     handler: bin/github
+    reservedConcurrency: ${env:GITHUB_WEBHOOK_MAX_CONCURRENCY}
     events:
       - http:
           path: ${env:GITHUB_WEBHOOK_URL}
@@ -66,27 +68,25 @@ functions:
 
   uploader:
     handler: bin/uploader
+    reservedConcurrency: ${env:UPLOADER_MAX_CONCURRENCY}
     events:
       - http:
           path: upload/
           method: post
-    environment:
-      S3_BUCKET: ${env:S3_BUCKET}
-      S3_AWS_REGION: ${env:S3_AWS_REGION}
-      S3_AWS_ACCESS_KEY_ID: ${env:S3_AWS_ACCESS_KEY_ID}
-      S3_AWS_SECRET_KEY: ${env:S3_AWS_SECRET_KEY}
-      S3_AWS_SESSION_TOKEN: ${env:S3_AWS_SESSION_TOKEN}
-      REQUIRED_SECRET_KEY: ${env:REQUIRED_SECRET_KEY}
+    lambdaAtEdge:
+      distribution: 'WebsiteDistribution'
+      eventType: 'origin-request'
 
   diff:
     handler: bin/diff-uploader
+    reservedConcurrency: ${env:DIFF_MAX_CONCURRENCY}
     events:
       - http:
           path: diff/
           method: post
     environment:
       GITHUB_SECRET_KEY: ${env:GITHUB_SECRET_KEY}
-      S3_BUCKET: ${env:S3_BUCKET}
+      S3_BUCKET: ${self:custom.s3Bucket}
       S3_AWS_REGION: ${env:S3_AWS_REGION}
 
 resources:
@@ -107,49 +107,7 @@ resources:
           WriteCapacityUnits: 1
         TableName: "gh_hooks_events"
 
-#    The following are a few example events you can configure
-#    NOTE: Please make sure to change your handler code to work with those events
-#    Check the event documentation for details
-# events:
-#    events:
-#      - http:
-#          path: users/create
-#          method: get
-#      - websocket: $connect
-#      - s3: ${env:BUCKET}
-#      - schedule: rate(10 minutes)
-#      - sns: greeter-topic
-#      - stream: arn:aws:dynamodb:region:XXXXXX:table/foo/stream/1970-01-01T00:00:00.000
-#      - alexaSkill: amzn1.ask.skill.xx-xx-xx-xx
-#      - alexaSmartHome: amzn1.ask.skill.xx-xx-xx-xx
-#      - iot:
-#          sql: "SELECT * FROM 'some_topic'"
-#      - cloudwatchEvent:
-#          event:
-#            source:
-#              - "aws.ec2"
-#            detail-type:
-#              - "EC2 Instance State-change Notification"
-#            detail:
-#              state:
-#                - pending
-#      - cloudwatchLog: '/aws/lambda/github'
-#      - cognitoUserPool:
-#          pool: MyUserPool
-#          trigger: PreSignUp
-
-#    Define function environment variables here
-#    environment:
-#      variable2: value2
-
-# you can add CloudFormation resource templates here
-#resources:
-#  Resources:
-#    NewResource:
-#      Type: AWS::S3::Bucket
-#      Properties:
-#        BucketName: my-new-bucket
-#  Outputs:
-#     NewOutput:
-#       Description: "Description for the output"
-#       Value: "Some output value"
+    S3BucketRapports:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.s3Bucket}

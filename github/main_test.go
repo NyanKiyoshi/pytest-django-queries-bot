@@ -40,7 +40,7 @@ func TestHandler_validRequest(t *testing.T) {
 	body := "no body needed"
 	request := awstypes.Request{
 		Headers: map[string]string{
-			HmacHeader:                 fmt.Sprint(string(security.Prefix), security.NewHMAC([]byte(body), fakeSecretKey)),
+			HmacHeader:                 fmt.Sprint(string(security.SignaturePrefix), security.NewHMAC([]byte(body), fakeSecretKey)),
 			ghevents.GithubEventHeader: "ping",
 		},
 		Body: body,

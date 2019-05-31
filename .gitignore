@@ -31,3 +31,9 @@ vendor
 
 # Do not commit generated code
 generated/
+
+# Do not commit node modules
+node_modules/
+
+# Do not commit the example binaries
+tools/

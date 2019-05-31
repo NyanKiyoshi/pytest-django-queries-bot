@@ -5,20 +5,18 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/guregu/dynamo"
-	"os"
 	"pytest-queries-bot/pytestqueries/generated"
 )
 
 // Get retrieves the AWS Dynamo DB
 func Get() *dynamo.DB {
-	region := os.Getenv("DYNAMO_AWS_REGION")
-	db := dynamo.New(session.New(), &aws.Config{
-		Region: &region,
-		Credentials: credentials.NewStaticCredentials(
+	cfg := aws.NewConfig().
+		WithRegion(generated.DynamoAwsRegion).
+		WithCredentials(credentials.NewStaticCredentials(
 			generated.DynamoAwsAccessKeyId,
 			generated.DynamoAwsSecretKey,
-			generated.DynamoAwsSessionToken,
-		),
-	})
+			generated.DynamoAwsSessionToken)).
+		WithLogLevel(aws.LogDebugWithHTTPBody)
+	db := dynamo.New(session.New(), cfg)
 	return db
 }

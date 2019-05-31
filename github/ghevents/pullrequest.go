@@ -27,8 +27,7 @@ func pullrequest(request *awstypes.Request) (awstypes.Response, error) {
 	}
 
 	switch *payload.Action {
-	case "opened":
-	case "synchronize":
+	case "opened", "synchronize":
 		err = synchronizePR(payload.PullRequest)
 		break
 	default:

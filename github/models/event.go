@@ -8,12 +8,17 @@ import (
 	"pytest-queries-bot/pytestqueries/generated"
 	"pytest-queries-bot/pytestqueries/github/awstypes"
 	"pytest-queries-bot/pytestqueries/github/consts"
+	"time"
 )
 
 type Event struct {
 	// HashSHA1 contains the git pull request
 	// event's SHA1 commit hash
 	HashSHA1 string
+
+	// EntryCreationDate is the date where this entry was created/updated.
+	// Not to be confused with the GitHub event date.
+	EntryDate time.Time `dynamodbav:"_date"`
 
 	// HasRapport is true if we already have a
 	// JSON report uploaded for that hash

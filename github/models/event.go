@@ -5,16 +5,15 @@ import (
 	"errors"
 	"github.com/guregu/dynamo"
 	"pytest-queries-bot/pytestqueries/db"
+	"pytest-queries-bot/pytestqueries/generated"
 	"pytest-queries-bot/pytestqueries/github/awstypes"
 	"pytest-queries-bot/pytestqueries/github/consts"
 )
 
-const tableName string = "gh_hooks_events"
-
 type Event struct {
 	// HashSHA1 contains the git pull request
 	// event's SHA1 commit hash
-	HashSHA1 string `dynamodbav:"sha1_hash"`
+	HashSHA1 string
 
 	// HasRapport is true if we already have a
 	// JSON report uploaded for that hash
@@ -26,7 +25,7 @@ type Event struct {
 }
 
 func EventTable() dynamo.Table {
-	return db.Get().Table(tableName)
+	return db.Get().Table(generated.DynamoEventsTableName)
 }
 
 // RetrieveEvent gets the event associated to a given hash

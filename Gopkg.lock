@@ -67,6 +67,14 @@
   version = "v1.19.38"
 
 [[projects]]
+  digest = "1:89222a85b884e2ab26ed316b4e2a186cd5068800b1c6e7c58573e69bd4f3c2a8"
+  name = "github.com/caarlos0/env"
+  packages = ["."]
+  pruneopts = ""
+  revision = "4bd75bf16b9ef8c1383109b5e4d931bd72c3b6d0"
+  version = "v6.0.0"
+
+[[projects]]
   digest = "1:8561fc011218ed9821f6d73057154e692cdfd0f37e929ef6c4a574b6299136cb"
   name = "github.com/cenkalti/backoff"
   packages = ["."]
@@ -141,6 +149,14 @@
   version = "v1.0.0"
 
 [[projects]]
+  digest = "1:d2fbaf1a37813a7d58e490d4138303e6ec2e2a632f78e6c81bc726cc301c79ca"
+  name = "github.com/stoewer/go-strcase"
+  packages = ["."]
+  pruneopts = ""
+  revision = "9f4628dc69009a239427f342caccb0047c7aea01"
+  version = "v1.0.2"
+
+[[projects]]
   digest = "1:381bcbeb112a51493d9d998bbba207a529c73dbb49b3fd789e48c63fac1f192c"
   name = "github.com/stretchr/testify"
   packages = ["assert"]
@@ -166,9 +182,11 @@
     "github.com/aws/aws-sdk-go/aws/credentials",
     "github.com/aws/aws-sdk-go/aws/session",
     "github.com/aws/aws-sdk-go/service/s3/s3manager",
+    "github.com/caarlos0/env",
     "github.com/fnproject/fdk-go",
     "github.com/google/go-github/github",
     "github.com/guregu/dynamo",
+    "github.com/stoewer/go-strcase",
     "github.com/stretchr/testify/assert",
   ]
   solver-name = "gps-cdcl"

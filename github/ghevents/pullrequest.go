@@ -21,17 +21,18 @@ func pullrequest(request *awstypes.Request) (awstypes.Response, error) {
 	var payload github.PullRequestEvent
 	var err error
 
-	if err = json.Unmarshal([]byte(request.Body), payload); err != nil ||
+	if err = json.Unmarshal([]byte(request.Body), &payload); err != nil ||
 		payload.Action == nil {
 		return awstypes.Response{StatusCode: 400}, err
 	}
 
 	switch *payload.Action {
+	case "opened":
 	case "synchronize":
 		err = synchronizePR(payload.PullRequest)
 		break
 	default:
-		return unknown()
+		return unknown("pull_request action", payload.Action)
 	}
 
 	if err != nil {
@@ -43,5 +44,6 @@ func pullrequest(request *awstypes.Request) (awstypes.Response, error) {
 
 	return awstypes.Response{
 		StatusCode: 200,
+		Body:       `{"status": 200}`,
 	}, nil
 }

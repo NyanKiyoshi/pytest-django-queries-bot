@@ -63,7 +63,6 @@ functions:
           path: ${env:GITHUB_WEBHOOK_URL}
           method: post
     environment:
-      DYNAMO_AWS_REGION: ${env:DYNAMO_AWS_REGION}
       GITHUB_SECRET_KEY: ${env:GITHUB_SECRET_KEY}
 
   uploader:
@@ -73,9 +72,6 @@ functions:
       - http:
           path: upload/
           method: post
-    lambdaAtEdge:
-      distribution: 'WebsiteDistribution'
-      eventType: 'origin-request'
 
   diff:
     handler: bin/diff-uploader
@@ -96,16 +92,16 @@ resources:
       Properties:
         AttributeDefinitions:
           -
-            AttributeName: sha1_hash
+            AttributeName: HashSHA1
             AttributeType: S
         KeySchema:
           -
-            AttributeName: sha1_hash
+            AttributeName: HashSHA1
             KeyType: HASH
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
-        TableName: "gh_hooks_events"
+        TableName: ${env:DYNAMO_EVENTS_TABLE_NAME}
 
     S3BucketRapports:
       Type: AWS::S3::Bucket

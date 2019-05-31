@@ -2,4 +2,4 @@
 
 . ./sourceenv.sh
 
-make build
+make generate

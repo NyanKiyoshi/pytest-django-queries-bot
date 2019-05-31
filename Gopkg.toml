@@ -35,3 +35,11 @@
 [[constraint]]
   name = "github.com/aws/aws-sdk-go"
   version = "1.19.38"
+
+[[constraint]]
+  name = "github.com/stoewer/go-strcase"
+  version = "1.0.2"
+
+[[constraint]]
+  name = "github.com/NyanKiyoshi/dynamo"
+  version = "1.2.2"

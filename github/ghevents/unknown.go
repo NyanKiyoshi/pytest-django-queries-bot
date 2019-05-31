@@ -1,11 +1,14 @@
 package ghevents
 
-import "pytest-queries-bot/pytestqueries/github/awstypes"
+import (
+	"fmt"
+	"pytest-queries-bot/pytestqueries/github/awstypes"
+)
 
-func unknown() (awstypes.Response, error) {
+func unknown(expectedEventType string, eventname *string) (awstypes.Response, error) {
 	return awstypes.Response{
 		StatusCode: 405,
-		Body:       `{"message": "Unknown or unsupported event"}`,
+		Body:       fmt.Sprintf(`{"message": "Unknown or unsupported %s: %s"}`, expectedEventType, *eventname),
 		Headers: map[string]string{
 			"Content-Type": "application/json",
 		},

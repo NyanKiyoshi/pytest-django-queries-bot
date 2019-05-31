@@ -8,9 +8,9 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
+	"pytest-queries-bot/pytestqueries/generated"
 	"pytest-queries-bot/pytestqueries/github/awstypes"
 	"pytest-queries-bot/pytestqueries/github/models"
-	"pytest-queries-bot/pytestqueries/uploader/generated"
 )
 
 // Response is of type APIGatewayProxyResponse since we're leveraging the
@@ -56,10 +56,10 @@ func Handler(ctx awstypes.Request) (Response, error) {
 
 	// Create a session to AWS to upload to the S3 bucket
 	awsSession, err := session.NewSession(&aws.Config{
-		Region: &generated.S3BucketRegion,
+		Region: aws.String(generated.S3AwsRegion),
 		Credentials: credentials.NewStaticCredentials(
-			generated.S3AWSAccessKeyID,
-			generated.S3AWSSecretKey,
+			generated.S3AwsAccessKeyId,
+			generated.S3AwsSecretKey,
 			generated.S3AwsSessionToken,
 		),
 	})
@@ -73,7 +73,7 @@ func Handler(ctx awstypes.Request) (Response, error) {
 	s3ContentType := string(jsonContentType) // copy the string because AWS wants a pointer
 
 	if _, err := uploader.Upload(&s3manager.UploadInput{
-		Bucket:      &generated.S3BucketName,
+		Bucket:      aws.String(generated.S3Bucket),
 		Key:         &event.HashSHA1,
 		ContentType: &s3ContentType,
 	}); err != nil {

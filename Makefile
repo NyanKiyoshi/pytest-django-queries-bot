@@ -1,6 +1,9 @@
 .PHONY: build clean deploy
 
-build:
+generate:
+	env go generate gen.go
+
+build: generate
 	dep ensure -v
 	env GOOS=linux go build -ldflags="-s -w" -o bin/github github/main.go
 	env GOOS=linux go build -ldflags="-s -w" -o bin/uploader uploader/main.go

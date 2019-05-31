@@ -10,5 +10,9 @@
 ## Build
 1. `make`
 
+## Local Testing
+1. install docker
+1. pip install aws-sam-cli
+
 ## Deploy
 1. `serverless deploy`

@@ -25,7 +25,7 @@ func main() {
 	targetURL := cfg.UploadEndpoint.String()
 	contentType := "application/json"
 
-	utils.SendUploadRequest(
+	_ = utils.SendUploadRequest(
 		targetURL,
 		contentType,
 		bufio.NewReader(os.Stdin),

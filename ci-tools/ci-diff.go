@@ -24,7 +24,7 @@ func main() {
 	targetURL := cfg.DiffEndpoint.String()
 	contentType := "text/plain"
 
-	utils.SendUploadRequest(
+	_ = utils.SendUploadRequest(
 		targetURL,
 		contentType,
 		bufio.NewReader(os.Stdin),

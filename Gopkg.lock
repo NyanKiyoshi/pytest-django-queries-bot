@@ -134,6 +134,14 @@
   version = "v1.2.1"
 
 [[projects]]
+  digest = "1:ca5c90960520407749b98c49650f54f5f90a667796e85c5ee1597478f702fb91"
+  name = "github.com/jessevdk/go-flags"
+  packages = ["."]
+  pruneopts = ""
+  revision = "c6ca198ec95c841fdb89fc0de7496fed11ab854e"
+  version = "v1.4.0"
+
+[[projects]]
   digest = "1:13fe471d0ed891e8544eddfeeb0471fd3c9f2015609a1c000aefdedf52a19d40"
   name = "github.com/jmespath/go-jmespath"
   packages = ["."]
@@ -186,6 +194,7 @@
     "github.com/fnproject/fdk-go",
     "github.com/google/go-github/github",
     "github.com/guregu/dynamo",
+    "github.com/jessevdk/go-flags",
     "github.com/stoewer/go-strcase",
     "github.com/stretchr/testify/assert",
   ]

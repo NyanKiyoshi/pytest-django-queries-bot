@@ -7,11 +7,15 @@ cache:
 
 env:
   global:
-    - DIFF_RESULTS_BUCKET=somewhere...
+    - DIFF_RESULTS_BASE_URL=somewhere...
+    - QUERIES_RESULTS_PATH=/tmp/queries-results.json
 
 install:
   - git clone https://github.com/NyanKiyoshi/pytest-django-queries-ci-tools.git --depth 1 ../queries-ci-tools
   - pip install --pre pytest-django-queries
 
 script:
+  - echo yay
+
+after_success:
   - ../queries-ci-tools/handle-event.sh

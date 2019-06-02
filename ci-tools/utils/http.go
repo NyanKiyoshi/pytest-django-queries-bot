@@ -1,8 +1,9 @@
 package utils
 
 import (
+	"errors"
+	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"time"
 )
@@ -14,12 +15,12 @@ var Client = http.Client{
 	Timeout: 30 * time.Second,
 }
 
-func SendUploadRequest(url, contentType string, reader io.Reader, headers *map[string]string) *http.Response {
+func SendUploadRequest(url, contentType string, reader io.Reader, headers *map[string]string) (*http.Response, error) {
 
 	req, err := http.NewRequest("POST", url, reader)
 
 	if err != nil {
-		log.Fatalf("Failed to create the request: %s", err.Error())
+		return nil, fmt.Errorf("failed to create the request: %s", err)
 	}
 
 	if headers != nil {
@@ -33,14 +34,12 @@ func SendUploadRequest(url, contentType string, reader io.Reader, headers *map[s
 	resp, err := Client.Do(req)
 
 	if err != nil {
-		log.Fatalf("Failed to upload: %s", err.Error())
+		return nil, fmt.Errorf("failed to upload: %s", err)
 	}
 
 	if resp != nil {
-		log.Printf("Uploaded and got HTTP %d (%s)", resp.StatusCode, resp.Status)
-		return resp
+		return resp, nil
 	}
 
-	log.Fatal("We got no response and no error... Feels ignored.")
-	return nil
+	return nil, errors.New("we got no response and no error... Feels ignored")
 }

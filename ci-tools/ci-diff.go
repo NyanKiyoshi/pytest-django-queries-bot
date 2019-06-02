@@ -24,10 +24,13 @@ func main() {
 	targetURL := cfg.DiffEndpoint.String()
 	contentType := "text/plain"
 
-	_ = utils.SendUploadRequest(
+	if _, err := utils.SendUploadRequest(
 		targetURL,
 		contentType,
 		bufio.NewReader(os.Stdin),
 		nil,
-	)
+	); err != nil {
+		print(err)
+		os.Exit(1)
+	}
 }

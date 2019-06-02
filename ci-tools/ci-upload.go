@@ -25,10 +25,13 @@ func main() {
 	targetURL := cfg.UploadEndpoint.String()
 	contentType := "application/json"
 
-	_ = utils.SendUploadRequest(
+	if _, err := utils.SendUploadRequest(
 		targetURL,
 		contentType,
 		bufio.NewReader(os.Stdin),
 		&map[string]string{"X-Secret-Key": cfg.SecretKey},
-	)
+	); err != nil {
+		print(err)
+		os.Exit(1)
+	}
 }

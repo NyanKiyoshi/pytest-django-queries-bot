@@ -3,7 +3,7 @@
 export PATH="$PATH:$(npm bin)"
 has_error=0
 
-[[ -f production.env ]] && . ./production.env
+[[ -f production.env ]] && . ./production.env || [[ -f development.env ]] && . ./development.env
 
 function ensuredep() {
     which "$1" > /dev/null || {

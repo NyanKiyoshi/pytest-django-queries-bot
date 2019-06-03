@@ -8,11 +8,12 @@
 1. `export PATH="$PATH:$(npm bin)"`
 
 ## Build
-1. `make`
+1. `./compile`
 
 ## Local Testing
 1. install docker
 1. pip install aws-sam-cli
+1. `./local-server.sh`
 
 ## Deploy
 1. `serverless deploy`

@@ -31,6 +31,7 @@ var requiredEnvVars = []string{
 	"S3_AWS_SESSION_TOKEN",
 
 	"REQUIRED_SECRET_KEY",
+	"GITHUB_ACCESS_TOKEN",
 }
 
 var environVariables = make(map[string]string, len(requiredEnvVars))

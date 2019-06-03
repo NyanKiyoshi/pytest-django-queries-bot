@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"time"
 )
@@ -38,7 +39,11 @@ func SendUploadRequest(url, contentType string, reader io.Reader, headers *map[s
 	}
 
 	if resp != nil {
-		return resp, nil
+		if resp.StatusCode > 299 || resp.StatusCode < 200 {
+			return resp, nil
+		}
+		body, _ := ioutil.ReadAll(resp.Body)
+		return nil, fmt.Errorf("got %s: %s", resp.Status, body)
 	}
 
 	return nil, errors.New("we got no response and no error... Feels ignored")

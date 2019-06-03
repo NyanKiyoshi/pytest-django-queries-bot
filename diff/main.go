@@ -3,7 +3,9 @@ package main
 import (
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/google/go-github/github"
 	"pytest-queries-bot/pytestqueries/github/awstypes"
+	"pytest-queries-bot/pytestqueries/github/client"
 	"pytest-queries-bot/pytestqueries/github/models"
 )
 
@@ -22,10 +24,32 @@ func Handler(request awstypes.Request) (Response, error) {
 	}
 
 	if event.DiffUploaded {
-		return Response{StatusCode: 403, Body: "A diff was already uploaded"}, nil
+		return Response{StatusCode: 403, Body: "A diff was already uploaded for this revision"}, nil
 	}
 
-	return Response{StatusCode: 404}, nil
+	ghClient, ctx := client.GetClient()
+	comment := github.PullRequestComment{
+		Body: &request.Body,
+	}
+
+	if event.GitHubCommentID != 0 {
+		_, _, err := ghClient.PullRequests.EditComment(
+			*ctx, event.OwnerName, event.RepoName, event.GitHubCommentID, &comment,
+		)
+		if err == nil {
+			return Response{StatusCode: 201, Body: "Comment created."}, nil
+		}
+	}
+
+	_, _, err = ghClient.PullRequests.CreateComment(
+		*ctx, event.OwnerName, event.RepoName, event.PullRequestNumber, &comment,
+	)
+
+	if err == nil {
+		return Response{StatusCode: 201, Body: "Comment created."}, nil
+	}
+
+	return Response{StatusCode: 500, Body: "Failed to create a comment..."}, err
 }
 
 func main() {

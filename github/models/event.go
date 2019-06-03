@@ -1,7 +1,6 @@
 package models
 
 import (
-	"crypto/sha1"
 	"errors"
 	"github.com/guregu/dynamo"
 	"pytest-queries-bot/pytestqueries/db"
@@ -27,6 +26,20 @@ type Event struct {
 	// DiffUploaded is true if we already have a
 	// diff report sent for that hash
 	DiffUploaded bool `dynamodbav:"diff_was_uploaded"`
+
+	// OwnerName is the owner of the target repository.
+	OwnerName string `dynamodbav:"owner_name"`
+
+	// RepoName is the name of the target repository.
+	RepoName string `dynamodbav:"repo_name"`
+
+	// PullRequestNumber is the pull request number in GitHub.
+	// This will be used to comment with results into GitHub.
+	PullRequestNumber int `dynamodbav:"pr_number"`
+
+	// GitHubCommentID is the bot's diff comment over the pull request,
+	// if any. This will be used to update any existing comment.
+	GitHubCommentID int64 `dynamodbav:"github_comment_id"`
 }
 
 func EventTable() dynamo.Table {
@@ -50,7 +63,7 @@ func CheckEvent(request *awstypes.Request) (*Event, error) {
 	}
 
 	commitHash := request.Headers[consts.CommitHashHeaderName]
-	if len(commitHash) != sha1.Size {
+	if len(commitHash) != consts.SHA1Length {
 		return nil, errors.New("invalid or missing SHA1 commit hash")
 	}
 

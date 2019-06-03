@@ -14,7 +14,13 @@ func synchronizePR(data *github.PullRequest) (*awstypes.Response, error) {
 		return nil, errors.New("pull request hash missing")
 	}
 
-	event := models.Event{HashSHA1: *data.Head.SHA, EntryDate: time.Now()}
+	event := models.Event{
+		HashSHA1:          *data.Head.SHA,
+		EntryDate:         time.Now(),
+		PullRequestNumber: *data.Number,
+		OwnerName:         *data.Head.Repo.Owner.Name,
+		RepoName:          *data.Head.Repo.Name,
+	}
 	err := models.EventTable().Put(event).Run()
 
 	if err != nil {

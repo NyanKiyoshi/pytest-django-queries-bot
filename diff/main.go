@@ -20,7 +20,7 @@ type Response events.APIGatewayProxyResponse
 // Handler is our lambda handler invoked by the `lambda.Start` function call
 func Handler(request awstypes.Request) (Response, error) {
 	log.Printf("%v", request.Headers)
-	event, err := models.CheckEvent(&request)
+	event, pr, err := models.CheckEvent(&request)
 
 	if err != nil {
 		return Response{StatusCode: 400, Body: err.Error()}, err
@@ -35,15 +35,15 @@ func Handler(request awstypes.Request) (Response, error) {
 		Body: &request.Body,
 	}
 
-	if event.GitHubCommentID != 0 {
+	if pr.GitHubCommentID != 0 {
 		_, _, err := ghClient.Issues.EditComment(
-			*ctx, event.OwnerName, event.RepoName, event.GitHubCommentID, &comment,
+			*ctx, pr.OwnerName, pr.RepoName, pr.GitHubCommentID, &comment,
 		)
 
 		if err != nil {
 			return Response{
 				StatusCode: 500,
-				Body:       fmt.Sprintf("Failed to create comment %d...", event.GitHubCommentID),
+				Body:       fmt.Sprintf("Failed to create comment %d...", pr.GitHubCommentID),
 			}, err
 		}
 
@@ -53,20 +53,21 @@ func Handler(request awstypes.Request) (Response, error) {
 	if !event.DiffUploaded {
 
 		newComment, _, err := ghClient.Issues.CreateComment(
-			*ctx, event.OwnerName, event.RepoName, event.PullRequestNumber, &comment,
+			*ctx, pr.OwnerName, pr.RepoName, pr.PullRequestNumber, &comment,
 		)
 
 		if err != nil {
 			return Response{
 				StatusCode: 500,
-				Body:       fmt.Sprintf("Failed to create comment %d...", event.GitHubCommentID),
+				Body:       fmt.Sprintf("Failed to create comment %d...", pr.GitHubCommentID),
 			}, err
 		}
 
-		event.GitHubCommentID = *newComment.ID
+		pr.GitHubCommentID = *newComment.ID
 	}
 
 	err = models.EventTable().Put(event).Run()
+	err = models.PullRequestTable().Put(pr).Run()
 	return Response{StatusCode: 201, Body: "Comment created."}, err
 }
 

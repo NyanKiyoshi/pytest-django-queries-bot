@@ -15,13 +15,26 @@ func synchronizePR(data *github.PullRequest) (*awstypes.Response, error) {
 	}
 
 	event := models.Event{
-		HashSHA1:          *data.Head.SHA,
-		EntryDate:         time.Now(),
-		PullRequestNumber: *data.Number,
-		OwnerName:         *data.Base.Repo.Owner.Login,
-		RepoName:          *data.Head.Repo.Name,
+		HashSHA1:      *data.Head.SHA,
+		EntryDate:     time.Now(),
+		PullRequestID: *data.ID,
 	}
 	err := models.EventTable().Put(event).Run()
+
+	if err != nil {
+		return nil, err
+	}
+
+	if err = models.PullRequestTable().Get("PullRequestID", *data.ID).One(struct{}{}); err != nil {
+		pr := models.PullRequest{
+			PullRequestID:     *data.ID,
+			PullRequestNumber: *data.Number,
+			OwnerName:         *data.Base.Repo.Owner.Login,
+			RepoName:          *data.Head.Repo.Name,
+			EntryDate:         time.Now(),
+		}
+		err = models.PullRequestTable().Put(pr).Run()
+	}
 
 	if err != nil {
 		return nil, err

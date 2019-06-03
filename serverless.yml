@@ -91,17 +91,29 @@ resources:
       Type: 'AWS::DynamoDB::Table'
       Properties:
         AttributeDefinitions:
-          -
-            AttributeName: HashSHA1
+          - AttributeName: HashSHA1
             AttributeType: S
         KeySchema:
-          -
-            AttributeName: HashSHA1
+          - AttributeName: HashSHA1
             KeyType: HASH
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         TableName: ${env:DYNAMO_EVENTS_TABLE_NAME}
+
+    PullRequestDataDynamoDBTable:
+      Type: 'AWS::DynamoDB::Table'
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: PullRequestID
+            AttributeType: N
+        KeySchema:
+          - AttributeName: PullRequestID
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${env:DYNAMO_PULL_REQ_TABLE_NAME}
 
     S3BucketRapports:
       Type: AWS::S3::Bucket

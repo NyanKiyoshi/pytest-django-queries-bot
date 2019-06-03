@@ -27,19 +27,9 @@ type Event struct {
 	// diff report sent for that hash
 	DiffUploaded bool `dynamodbav:"diff_was_uploaded"`
 
-	// OwnerName is the owner of the target repository.
-	OwnerName string `dynamodbav:"owner_name"`
-
-	// RepoName is the name of the target repository.
-	RepoName string `dynamodbav:"repo_name"`
-
-	// PullRequestNumber is the pull request number in GitHub.
+	// PullRequestID is the pull request ID in GitHub.
 	// This will be used to comment with results into GitHub.
-	PullRequestNumber int `dynamodbav:"pr_number"`
-
-	// GitHubCommentID is the bot's diff comment over the pull request,
-	// if any. This will be used to update any existing comment.
-	GitHubCommentID int64 `dynamodbav:"github_comment_id"`
+	PullRequestID int64 `dynamodbav:"pr_id"`
 }
 
 func EventTable() dynamo.Table {
@@ -56,10 +46,10 @@ func RetrieveEvent(commitHash string) (*Event, error) {
 		One(event)
 }
 
-func CheckEvent(request *awstypes.Request) (*Event, error) {
+func CheckEvent(request *awstypes.Request) (*Event, *PullRequest, error) {
 	// Check if the received body is not too large
 	if len(request.Body) > consts.MaxUploadSize {
-		return nil, errors.New("body is too big")
+		return nil, nil, errors.New("body is too big")
 	}
 
 	commitHash, ok := request.Headers[consts.CommitHashHeaderName]
@@ -67,8 +57,20 @@ func CheckEvent(request *awstypes.Request) (*Event, error) {
 		commitHash = request.Headers[consts.CommitHashHeaderNameLower]
 	}
 	if len(commitHash) != consts.SHA1Length {
-		return nil, errors.New("invalid or missing SHA1 commit hash")
+		return nil, nil, errors.New("invalid or missing SHA1 commit hash")
 	}
 
-	return RetrieveEvent(commitHash)
+	event, err := RetrieveEvent(commitHash)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	pr := &PullRequest{}
+	err = PullRequestTable().Get("PullRequestID", event.PullRequestID).One(pr)
+
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return event, pr, nil
 }

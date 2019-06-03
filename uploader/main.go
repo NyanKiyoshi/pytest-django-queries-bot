@@ -48,7 +48,7 @@ func Handler(ctx awstypes.Request) (Response, error) {
 	}
 
 	// Retrieve the event to ensure the request is correct and expected
-	event, err := models.CheckEvent(&ctx)
+	event, _, err := models.CheckEvent(&ctx)
 
 	if err != nil {
 		return Response{StatusCode: 400, Body: err.Error()}, err

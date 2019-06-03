@@ -1,9 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/google/go-github/github"
+	"log"
 	"pytest-queries-bot/pytestqueries/github/awstypes"
 	"pytest-queries-bot/pytestqueries/github/client"
 	"pytest-queries-bot/pytestqueries/github/models"
@@ -17,6 +19,7 @@ type Response events.APIGatewayProxyResponse
 
 // Handler is our lambda handler invoked by the `lambda.Start` function call
 func Handler(request awstypes.Request) (Response, error) {
+	log.Printf("%v", request.Headers)
 	event, err := models.CheckEvent(&request)
 
 	if err != nil {
@@ -28,28 +31,43 @@ func Handler(request awstypes.Request) (Response, error) {
 	}
 
 	ghClient, ctx := client.GetClient()
-	comment := github.PullRequestComment{
+	comment := github.IssueComment{
 		Body: &request.Body,
 	}
 
 	if event.GitHubCommentID != 0 {
-		_, _, err := ghClient.PullRequests.EditComment(
+		_, _, err := ghClient.Issues.EditComment(
 			*ctx, event.OwnerName, event.RepoName, event.GitHubCommentID, &comment,
 		)
-		if err == nil {
-			return Response{StatusCode: 201, Body: "Comment created."}, nil
+
+		if err != nil {
+			return Response{
+				StatusCode: 500,
+				Body:       fmt.Sprintf("Failed to create comment %d...", event.GitHubCommentID),
+			}, err
 		}
+
+		event.DiffUploaded = true
 	}
 
-	_, _, err = ghClient.PullRequests.CreateComment(
-		*ctx, event.OwnerName, event.RepoName, event.PullRequestNumber, &comment,
-	)
+	if !event.DiffUploaded {
 
-	if err == nil {
-		return Response{StatusCode: 201, Body: "Comment created."}, nil
+		newComment, _, err := ghClient.Issues.CreateComment(
+			*ctx, event.OwnerName, event.RepoName, event.PullRequestNumber, &comment,
+		)
+
+		if err != nil {
+			return Response{
+				StatusCode: 500,
+				Body:       fmt.Sprintf("Failed to create comment %d...", event.GitHubCommentID),
+			}, err
+		}
+
+		event.GitHubCommentID = *newComment.ID
 	}
 
-	return Response{StatusCode: 500, Body: "Failed to create a comment..."}, err
+	err = models.EventTable().Put(event).Run()
+	return Response{StatusCode: 201, Body: "Comment created."}, err
 }
 
 func main() {

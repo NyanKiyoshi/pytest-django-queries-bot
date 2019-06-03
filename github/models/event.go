@@ -52,7 +52,7 @@ func RetrieveEvent(commitHash string) (*Event, error) {
 	event := &Event{}
 	return event, EventTable().
 		Get("HashSHA1", commitHash).
-		Filter("HashSHA1", commitHash, "HasRapport", false).
+		Filter("HasRapport = ?", false).
 		One(event)
 }
 
@@ -62,7 +62,10 @@ func CheckEvent(request *awstypes.Request) (*Event, error) {
 		return nil, errors.New("body is too big")
 	}
 
-	commitHash := request.Headers[consts.CommitHashHeaderName]
+	commitHash, ok := request.Headers[consts.CommitHashHeaderName]
+	if !ok {
+		commitHash = request.Headers[consts.CommitHashHeaderNameLower]
+	}
 	if len(commitHash) != consts.SHA1Length {
 		return nil, errors.New("invalid or missing SHA1 commit hash")
 	}

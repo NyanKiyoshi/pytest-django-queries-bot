@@ -18,7 +18,7 @@ func synchronizePR(data *github.PullRequest) (*awstypes.Response, error) {
 		HashSHA1:          *data.Head.SHA,
 		EntryDate:         time.Now(),
 		PullRequestNumber: *data.Number,
-		OwnerName:         *data.Head.Repo.Owner.Name,
+		OwnerName:         *data.Base.Repo.Owner.Login,
 		RepoName:          *data.Head.Repo.Name,
 	}
 	err := models.EventTable().Put(event).Run()

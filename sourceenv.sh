@@ -34,6 +34,7 @@ ensureenv S3_AWS_ACCESS_KEY_ID
 ensureenv S3_AWS_SECRET_KEY
 ensureenv AWS_ACCESS_KEY_ID
 ensureenv AWS_SECRET_ACCESS_KEY
+ensureenv GITHUB_ACCESS_TOKEN
 
 ensuredep go
 ensuredep bash

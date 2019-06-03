@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 )
 
@@ -65,6 +66,7 @@ func GetBaseRef(data GqlQueryData) (string, error) {
 		Variables: data,
 	})
 
+	log.Printf("Requesting: %s", query)
 	bytes.NewReader(query)
 
 	if err != nil {
@@ -83,6 +85,7 @@ func GetBaseRef(data GqlQueryData) (string, error) {
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
+	log.Printf("Received: %s", body)
 	if err != nil {
 		return "", err
 	}

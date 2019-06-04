@@ -8,6 +8,8 @@ The GitHub webhook endpoint of the bot will receive an event from GitHub notifyi
 ### Sending a Diff File
 On a pull request, once the CI, e.g. Travis was done analyzing the performances and comparing the performance, it will send the results to the `diff` endpoint of the bot.
 
+[![https://i.imgur.com/VtrLu8M.png](https://i.imgur.com/VtrLu8M.png)](https://i.imgur.com/VtrLu8M.png)
+
 ### Sending a Results File
 On a push event (mostly master), once the CI, e.g. Travis or Circle CI was done analyzing the performances of the branch it will send the raw JSON results to the `upload` endpoint of the bot to allow other pull requests to compare their results with other base branches (master or else).
 
@@ -21,6 +23,11 @@ On a push event (mostly master), once the CI, e.g. Travis or Circle CI was done 
 ### Installation
 1. `npm i`
 1. `export PATH="$PATH:$(npm bin)"`
+
+### Integrating with GitHub
+TBA.
+
+[![https://i.imgur.com/Cs9Abzg.png](https://i.imgur.com/Cs9Abzg.png)](https://i.imgur.com/Cs9Abzg.png)
 
 ### Compiling
 Note: you will need to edit `development.env` or creation `production.env`.

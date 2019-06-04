@@ -47,7 +47,3 @@
 [[constraint]]
   branch = "master"
   name = "golang.org/x/oauth2"
-
-[[constraint]]
-  branch = "master"
-  name = "github.com/eawsy/aws-lambda-go-event"

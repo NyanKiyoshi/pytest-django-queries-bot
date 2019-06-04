@@ -5,6 +5,7 @@ generate:
 
 build: generate
 	dep ensure -v
+	env GOOS=darwin go build -ldflags="-s -w" -o bin/ghauthorize ghapp/main.go
 	env GOOS=linux go build -ldflags="-s -w" -o bin/github github/main.go
 	env GOOS=linux go build -ldflags="-s -w" -o bin/uploader uploader/main.go
 	env GOOS=linux go build -ldflags="-s -w" -o bin/diff-uploader diff/main.go

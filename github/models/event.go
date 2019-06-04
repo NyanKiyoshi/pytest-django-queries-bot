@@ -42,14 +42,13 @@ func RetrieveEvent(commitHash string) (*Event, error) {
 	event := &Event{}
 	return event, EventTable().
 		Get("HashSHA1", commitHash).
-		Filter("HasRapport = ?", false).
 		One(event)
 }
 
-func CheckEvent(request *awstypes.Request) (*Event, *PullRequest, error) {
+func CheckEvent(request *awstypes.Request) (*Event, error) {
 	// Check if the received body is not too large
 	if len(request.Body) > consts.MaxUploadSize {
-		return nil, nil, errors.New("body is too big")
+		return nil, errors.New("body is too big")
 	}
 
 	commitHash, ok := request.Headers[consts.CommitHashHeaderName]
@@ -57,20 +56,8 @@ func CheckEvent(request *awstypes.Request) (*Event, *PullRequest, error) {
 		commitHash = request.Headers[consts.CommitHashHeaderNameLower]
 	}
 	if len(commitHash) != consts.SHA1Length {
-		return nil, nil, errors.New("invalid or missing SHA1 commit hash")
+		return nil, errors.New("invalid or missing SHA1 commit hash")
 	}
 
-	event, err := RetrieveEvent(commitHash)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	pr := &PullRequest{}
-	err = PullRequestTable().Get("PullRequestID", event.PullRequestID).One(pr)
-
-	if err != nil {
-		return nil, nil, err
-	}
-
-	return event, pr, nil
+	return RetrieveEvent(commitHash)
 }

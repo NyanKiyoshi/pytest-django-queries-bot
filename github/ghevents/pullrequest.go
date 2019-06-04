@@ -25,7 +25,10 @@ func synchronizePR(data *github.PullRequest) (*awstypes.Response, error) {
 		return nil, err
 	}
 
-	if err = models.PullRequestTable().Get("PullRequestID", *data.ID).One(struct{}{}); err != nil {
+	pr := &models.PullRequest{}
+	err = models.PullRequestTable().Get("PullRequestID", *data.ID).One(pr)
+
+	if pr.PullRequestNumber == 0 {
 		pr := models.PullRequest{
 			PullRequestID:     *data.ID,
 			PullRequestNumber: *data.Number,

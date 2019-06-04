@@ -43,7 +43,6 @@ func main() {
 			"X-Secret-Key": cfg.SecretKey,
 			"X-Commit-Rev": cfg.SHA1Revision},
 	); err != nil {
-		print(err)
-		os.Exit(1)
+		log.Fatal(err)
 	}
 }

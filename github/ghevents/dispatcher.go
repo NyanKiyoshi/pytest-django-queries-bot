@@ -21,7 +21,7 @@ func Dispatch(request *awstypes.Request) (awstypes.Response, error) {
 	case "ping":
 		return ping()
 	case "push":
-		return ping()
+		return push(request)
 	default:
 		return unknown("event", &event)
 	}

@@ -5,7 +5,6 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/google/go-github/github"
-	"log"
 	"pytest-queries-bot/pytestqueries/github/awstypes"
 	"pytest-queries-bot/pytestqueries/github/client"
 	"pytest-queries-bot/pytestqueries/github/models"
@@ -19,9 +18,12 @@ type Response events.APIGatewayProxyResponse
 
 // Handler is our lambda handler invoked by the `lambda.Start` function call
 func Handler(request awstypes.Request) (Response, error) {
-	log.Printf("%v", request.Headers)
-	event, pr, err := models.CheckEvent(&request)
+	event, err := models.CheckEvent(&request)
+	if err != nil {
+		return Response{StatusCode: 400, Body: err.Error()}, err
+	}
 
+	pr, err := models.GetPullRequest(event.PullRequestID)
 	if err != nil {
 		return Response{StatusCode: 400, Body: err.Error()}, err
 	}

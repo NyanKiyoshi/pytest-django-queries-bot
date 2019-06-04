@@ -34,3 +34,9 @@ type PullRequest struct {
 func PullRequestTable() dynamo.Table {
 	return db.Get().Table(generated.DynamoPullReqTableName)
 }
+
+func GetPullRequest(pullID int64) (*PullRequest, error) {
+	pr := &PullRequest{}
+	err := PullRequestTable().Get("PullRequestID", pullID).One(pr)
+	return pr, err
+}

@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/hmac"
+	"fmt"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go/aws"
@@ -11,6 +12,7 @@ import (
 	"pytest-queries-bot/pytestqueries/generated"
 	"pytest-queries-bot/pytestqueries/github/awstypes"
 	"pytest-queries-bot/pytestqueries/github/models"
+	"strings"
 )
 
 // Response is of type APIGatewayProxyResponse since we're leveraging the
@@ -21,7 +23,10 @@ type Response events.APIGatewayProxyResponse
 
 // SecretKeyHeaderName defines the header that contains
 // the secret key for uploading a file.
-const SecretKeyHeaderName = "X-Upload-Secret-Key"
+const SecretKeyHeaderName = "X-Secret-Key"
+const SecretKeyHeaderNameLower = "x-secret-key"
+const ContentTypeHeaderName = "Content-Type"
+const ContentTypeHeaderNameLower = "content-type"
 
 // ExpectedSecretKey contains the expected secret key to receive
 // that will allow the request to be handled.
@@ -34,21 +39,29 @@ func Handler(ctx awstypes.Request) (Response, error) {
 	secretKey, found := ctx.Headers[SecretKeyHeaderName]
 
 	if !found {
-		return Response{StatusCode: 400}, nil
+		secretKey, found = ctx.Headers[SecretKeyHeaderNameLower]
+	}
+
+	if !found {
+		return Response{StatusCode: 400}, fmt.Errorf("no creds: %v", ctx.Headers)
 	}
 
 	// Time based comparison of the received key to compare with the received key
 	if !hmac.Equal([]byte(secretKey), ExpectedSecretKey) {
-		return Response{StatusCode: 403, Body: "Bad credentials"}, nil
+		return Response{StatusCode: 403, Body: "Bad credentials"}, fmt.Errorf("bad creds: %s", secretKey)
 	}
 
 	// Check that the body might be JSON
-	if ctx.Headers["Content-Type"] != jsonContentType {
-		return Response{StatusCode: 400, Body: "Expected JSON"}, nil
+	contentType, ok := ctx.Headers[ContentTypeHeaderName]
+	if !ok {
+		contentType = ctx.Headers[ContentTypeHeaderNameLower]
+	}
+	if contentType != jsonContentType {
+		return Response{StatusCode: 400, Body: "Expected JSON"}, fmt.Errorf("invalid content type: %s", ctx.Headers["Content-Type"])
 	}
 
 	// Retrieve the event to ensure the request is correct and expected
-	event, _, err := models.CheckEvent(&ctx)
+	event, err := models.CheckEvent(&ctx)
 
 	if err != nil {
 		return Response{StatusCode: 400, Body: err.Error()}, err
@@ -76,6 +89,8 @@ func Handler(ctx awstypes.Request) (Response, error) {
 		Bucket:      aws.String(generated.S3Bucket),
 		Key:         &event.HashSHA1,
 		ContentType: &s3ContentType,
+		Body:        strings.NewReader(ctx.Body),
+		ACL:         aws.String("public-read"),
 	}); err != nil {
 		return Response{StatusCode: 500, Body: "Failed to upload"}, err
 	}
@@ -83,7 +98,7 @@ func Handler(ctx awstypes.Request) (Response, error) {
 	if err := models.EventTable().Update("HashSHA1", event.HashSHA1).
 		Set("HasRapport", true).
 		Run(); err != nil {
-		return Response{StatusCode: 500, Body: "Failed to update event data"}, nil
+		return Response{StatusCode: 500, Body: "Failed to update event data"}, err
 	}
 
 	return Response{StatusCode: 200}, nil

@@ -3,40 +3,48 @@
 HERE=`readlink -f "$(dirname $0)"`
 has_error=0
 
-function ensureenv() {
-    local key=$1
-    local value=${!key}
+. ${HERE}/_utils.sh
 
-    [[ -z "${value}" ]] && {
-        echo "Missing environment variable: '${key}'" >&2
-        has_error=1
-    }
-}
-
+ensureenv TRAVIS_PULL_REQUEST_SHA
+ensureenv TRAVIS_COMMIT_RANGE
 ensureenv TRAVIS_REPO_SLUG
 ensureenv TRAVIS_BRANCH
-ensureenv GITHUB_GQL_TOKEN
 ensureenv DIFF_RESULTS_BASE_URL
 ensureenv QUERIES_RESULTS_PATH
+ensureenv DIFF_ENDPOINT
 
 [[ ${has_error} -eq 1 ]] && {
     echo "Found errors. Exiting..." >&2
     exit 1
 }
 
-user=`echo ${TRAVIS_REPO_SLUG} | cut -d/ -f1`
-repo=`echo ${TRAVIS_REPO_SLUG} | cut -d/ -f2`
-ref_name=${TRAVIS_BRANCH}
+user=`echo ${TRAVIS_PULL_REQUEST_SLUG} | cut -d/ -f1`
+repo=`echo ${TRAVIS_PULL_REQUEST_SLUG} | cut -d/ -f2`
+ref_name=${TRAVIS_PULL_REQUEST_BRANCH}
 
-base_ref_hash=$($HERE/tools/queries-get-gh-base-ref -u "${user}" -n "${repo}" -r "${ref_name}") || {
-    echo "Failed to get the base HEAD commit..." >&2
+base_ref_hash=$(echo ${TRAVIS_COMMIT_RANGE} | sed -E 's/\.\.\..+//')
+head_results_path="/tmp/base-results.json"
+missing_head=0
+
+curl --fail -X GET "${DIFF_RESULTS_BASE_URL}/${base_ref_hash}" -L -o "${head_results_path}" || {
+    echo "[Warning] Did not find a HEAD base results for ${base_ref_hash}" >&2
+    cp -v "${QUERIES_RESULTS_PATH}" "${head_results_path}"
+    missing_head=1
+}
+
+django-queries diff "${head_results_path}" "${QUERIES_RESULTS_PATH}" > /tmp/diff || {
+    echo "Failed to generate the diff. Aborting..." >&2
     exit 1
 }
 
-head_results_path="${mktemp}"
-curl -X GET "${DIFF_RESULTS_BASE_URL}/${base_ref_hash}" -Lo "${head_results_path}" || {
-    echo "[Warning] Did not find a HEAD base results for ${base_ref_hash}" >&2
-    echo '{}' > ${head_results_path}
-}
+echo Uploading...
 
-django-queries diff "${head_results_path}" "${QUERIES_RESULTS_PATH}"
+${HERE}/tools/queries-diff --rev ${TRAVIS_PULL_REQUEST_SHA} <<EOF
+
+Here is the report for ${TRAVIS_PULL_REQUEST_SHA} (${TRAVIS_PULL_REQUEST_SLUG} @ ${TRAVIS_PULL_REQUEST_BRANCH})
+$([[ ${missing_head} -eq 1 ]] && echo "Missing base report (${base_ref_hash}). The results couldn't be compared." || echo "Base comparison is ${base_ref_hash}.")
+
+\`\`\`diff
+$(cat /tmp/diff)
+\`\`\`
+EOF

@@ -37,6 +37,9 @@ django-queries diff "${head_results_path}" "${QUERIES_RESULTS_PATH}" > /tmp/diff
     exit 1
 }
 
+difference_count=$(grep -e  '^-' -e '^+' -c /tmp/diff)
+echo -n "Differences count (+/-): ${difference_count}"
+
 echo Uploading...
 
 ${HERE}/tools/queries-diff --rev ${TRAVIS_PULL_REQUEST_SHA} <<EOF
@@ -44,7 +47,15 @@ ${HERE}/tools/queries-diff --rev ${TRAVIS_PULL_REQUEST_SHA} <<EOF
 Here is the report for ${TRAVIS_PULL_REQUEST_SHA} (${TRAVIS_PULL_REQUEST_SLUG} @ ${TRAVIS_PULL_REQUEST_BRANCH})
 $([[ ${missing_head} -eq 1 ]] && echo "Missing base report (${base_ref_hash}). The results couldn't be compared." || echo "Base comparison is ${base_ref_hash}.")
 
+
+
+<details><summary>$([[ ${difference_count} -eq 0 ]] && echo "No differences were found." || echo "**Found ${difference_count} differences!**") (click me)</summary>
+<p>
+
 \`\`\`diff
 $(cat /tmp/diff)
 \`\`\`
+
+</p>
+</details>
 EOF

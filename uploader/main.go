@@ -90,7 +90,6 @@ func Handler(ctx awstypes.Request) (Response, error) {
 		Key:         &event.HashSHA1,
 		ContentType: &s3ContentType,
 		Body:        strings.NewReader(ctx.Body),
-		ACL:         aws.String("public-read"),
 	}); err != nil {
 		return Response{StatusCode: 500, Body: "Failed to upload"}, err
 	}

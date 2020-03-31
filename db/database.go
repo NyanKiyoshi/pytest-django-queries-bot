@@ -1,11 +1,11 @@
 package db
 
 import (
+	"github.com/NyanKiyoshi/pytest-django-queries-bot/generated"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/guregu/dynamo"
-	"pytest-queries-bot/pytestqueries/generated"
 )
 
 // Get retrieves the AWS Dynamo DB

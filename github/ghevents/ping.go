@@ -1,7 +1,7 @@
 package ghevents
 
 import (
-	"pytest-queries-bot/pytestqueries/github/awstypes"
+	"github.com/NyanKiyoshi/pytest-django-queries-bot/github/awstypes"
 )
 
 func ping() (awstypes.Response, error) {

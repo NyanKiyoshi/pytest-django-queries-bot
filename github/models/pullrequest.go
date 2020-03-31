@@ -1,9 +1,8 @@
 package models
 
 import (
+	"github.com/NyanKiyoshi/pytest-django-queries-bot/db"
 	"github.com/guregu/dynamo"
-	"pytest-queries-bot/pytestqueries/db"
-	"pytest-queries-bot/pytestqueries/generated"
 	"time"
 )
 

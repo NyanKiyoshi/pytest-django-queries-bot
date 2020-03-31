@@ -3,15 +3,15 @@ package main
 import (
 	"crypto/hmac"
 	"fmt"
+	"github.com/NyanKiyoshi/pytest-django-queries-bot/generated"
+	"github.com/NyanKiyoshi/pytest-django-queries-bot/github/awstypes"
+	"github.com/NyanKiyoshi/pytest-django-queries-bot/github/models"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
-	"pytest-queries-bot/pytestqueries/generated"
-	"pytest-queries-bot/pytestqueries/github/awstypes"
-	"pytest-queries-bot/pytestqueries/github/models"
 	"strings"
 )
 

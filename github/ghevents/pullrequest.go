@@ -3,9 +3,9 @@ package ghevents
 import (
 	"encoding/json"
 	"errors"
+	"github.com/NyanKiyoshi/pytest-django-queries-bot/github/awstypes"
+	"github.com/NyanKiyoshi/pytest-django-queries-bot/github/models"
 	"github.com/google/go-github/github"
-	"pytest-queries-bot/pytestqueries/github/awstypes"
-	"pytest-queries-bot/pytestqueries/github/models"
 	"time"
 )
 

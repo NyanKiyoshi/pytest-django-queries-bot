@@ -2,11 +2,11 @@ package models
 
 import (
 	"errors"
+	"github.com/NyanKiyoshi/pytest-django-queries-bot/db"
+	"github.com/NyanKiyoshi/pytest-django-queries-bot/generated"
+	"github.com/NyanKiyoshi/pytest-django-queries-bot/github/awstypes"
+	"github.com/NyanKiyoshi/pytest-django-queries-bot/github/consts"
 	"github.com/guregu/dynamo"
-	"pytest-queries-bot/pytestqueries/db"
-	"pytest-queries-bot/pytestqueries/generated"
-	"pytest-queries-bot/pytestqueries/github/awstypes"
-	"pytest-queries-bot/pytestqueries/github/consts"
 	"time"
 )
 

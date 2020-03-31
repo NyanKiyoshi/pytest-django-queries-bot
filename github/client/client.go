@@ -2,9 +2,9 @@ package client
 
 import (
 	"context"
+	"github.com/NyanKiyoshi/pytest-django-queries-bot/generated"
 	"github.com/google/go-github/github"
 	"golang.org/x/oauth2"
-	"pytest-queries-bot/pytestqueries/generated"
 )
 
 func GetClient() (*github.Client, *context.Context) {

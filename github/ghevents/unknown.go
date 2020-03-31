@@ -2,7 +2,7 @@ package ghevents
 
 import (
 	"fmt"
-	"pytest-queries-bot/pytestqueries/github/awstypes"
+	"github.com/NyanKiyoshi/pytest-django-queries-bot/github/awstypes"
 )
 
 func unknown(expectedEventType string, eventname *string) (awstypes.Response, error) {

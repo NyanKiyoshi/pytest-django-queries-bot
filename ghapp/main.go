@@ -2,12 +2,12 @@ package main
 
 import (
 	"fmt"
+	"github.com/NyanKiyoshi/pytest-django-queries-bot/generated"
 	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
-	"pytest-queries-bot/pytestqueries/generated"
 	"time"
 )
 
@@ -76,6 +76,7 @@ func handleAuthorized(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 
 	code := url_.Query().Get("code")

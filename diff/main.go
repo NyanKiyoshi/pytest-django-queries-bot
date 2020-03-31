@@ -2,12 +2,12 @@ package main
 
 import (
 	"fmt"
+	"github.com/NyanKiyoshi/pytest-django-queries-bot/github/awstypes"
+	"github.com/NyanKiyoshi/pytest-django-queries-bot/github/client"
+	"github.com/NyanKiyoshi/pytest-django-queries-bot/github/models"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/google/go-github/github"
-	"pytest-queries-bot/pytestqueries/github/awstypes"
-	"pytest-queries-bot/pytestqueries/github/client"
-	"pytest-queries-bot/pytestqueries/github/models"
 )
 
 // Response is of type APIGatewayProxyResponse since we're leveraging the

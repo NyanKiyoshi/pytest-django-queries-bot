@@ -32,7 +32,7 @@ func Handler(request awstypes.Request) (Response, error) {
 		return Response{StatusCode: 403, Body: "A diff was already uploaded for this revision"}, nil
 	}
 
-	ghClient, ctx := client.GetClient()
+	ghClient, ctx := client.GetClient(pr.InstallationId)
 	comment := github.IssueComment{
 		Body: &request.Body,
 	}

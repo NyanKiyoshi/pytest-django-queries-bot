@@ -2,6 +2,7 @@ package models
 
 import (
 	"github.com/NyanKiyoshi/pytest-django-queries-bot/db"
+	"github.com/NyanKiyoshi/pytest-django-queries-bot/generated"
 	"github.com/guregu/dynamo"
 	"time"
 )
@@ -16,6 +17,9 @@ type PullRequest struct {
 
 	// RepoName is the name of the target repository.
 	RepoName string `dynamodbav:"repo_name"`
+
+	// InstallationId is ID of the GitHub Application installation.
+	InstallationId int64 `dynamodbav:"installation_id"`
 
 	// PullRequestNumber is the pull request number in GitHub.
 	// This will be used to comment with results into GitHub.

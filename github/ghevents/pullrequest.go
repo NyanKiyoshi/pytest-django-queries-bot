@@ -9,7 +9,8 @@ import (
 	"time"
 )
 
-func synchronizePR(data *github.PullRequest) (*awstypes.Response, error) {
+func synchronizePR(payload *github.PullRequestEvent) (*awstypes.Response, error) {
+	data := payload.PullRequest
 	if data.Head.SHA == nil {
 		return nil, errors.New("pull request hash missing")
 	}
@@ -30,6 +31,7 @@ func synchronizePR(data *github.PullRequest) (*awstypes.Response, error) {
 
 	if pr.PullRequestNumber == 0 {
 		pr := models.PullRequest{
+			InstallationId:    *payload.Installation.ID,
 			PullRequestID:     *data.ID,
 			PullRequestNumber: *data.Number,
 			OwnerName:         *data.Base.Repo.Owner.Login,
@@ -61,7 +63,7 @@ func pullrequest(request *awstypes.Request) (awstypes.Response, error) {
 
 	switch *payload.Action {
 	case "opened", "synchronize":
-		response, err = synchronizePR(payload.PullRequest)
+		response, err = synchronizePR(&payload)
 		break
 	default:
 		return unknown("pull_request action", payload.Action)

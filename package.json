@@ -5,8 +5,9 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "aws-sam-local": "^0.2.11",
-    "serverless": "^1.44.1"
+    "serverless": "^1.67.0"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "aws-sam-local": "^0.2.11"
+  }
 }

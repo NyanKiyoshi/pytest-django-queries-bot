@@ -37,3 +37,6 @@ node_modules/
 
 # Do not commit the example binaries
 tools/
+
+# Do not commit NPM package-lock
+package-lock.json

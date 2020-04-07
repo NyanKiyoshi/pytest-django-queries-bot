@@ -1,7 +1,7 @@
 package db
 
 import (
-	"github.com/NyanKiyoshi/pytest-django-queries-bot/generated"
+	"github.com/NyanKiyoshi/pytest-django-queries-bot/config"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -11,11 +11,8 @@ import (
 // Get retrieves the AWS Dynamo DB
 func Get() *dynamo.DB {
 	cfg := aws.NewConfig().
-		WithRegion(generated.DynamoAwsRegion).
-		WithCredentials(credentials.NewStaticCredentials(
-			generated.DynamoAwsAccessKeyId,
-			generated.DynamoAwsSecretKey,
-			generated.DynamoAwsSessionToken)).
+		WithRegion(config.DynamoAwsRegion).
+		WithCredentials(credentials.NewEnvCredentials()).
 		WithLogLevel(aws.LogDebugWithHTTPBody)
 	db := dynamo.New(session.New(), cfg)
 	return db

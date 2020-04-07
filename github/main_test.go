@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
+	"github.com/NyanKiyoshi/pytest-django-queries-bot/github/awstypes"
+	"github.com/NyanKiyoshi/pytest-django-queries-bot/github/ghevents"
+	"github.com/NyanKiyoshi/pytest-django-queries-bot/github/security"
 	"github.com/stretchr/testify/assert"
-	"pytest-queries-bot/pytestqueries/github/awstypes"
-	"pytest-queries-bot/pytestqueries/github/ghevents"
-	"pytest-queries-bot/pytestqueries/github/security"
 	"testing"
 )
 

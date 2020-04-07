@@ -30,7 +30,7 @@ vendor
 *.env
 
 # Do not commit generated code
-generated/
+*.pem
 
 # Do not commit node modules
 node_modules/

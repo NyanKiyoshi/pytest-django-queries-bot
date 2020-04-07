@@ -2,8 +2,8 @@ package models
 
 import (
 	"errors"
+	"github.com/NyanKiyoshi/pytest-django-queries-bot/config"
 	"github.com/NyanKiyoshi/pytest-django-queries-bot/db"
-	"github.com/NyanKiyoshi/pytest-django-queries-bot/generated"
 	"github.com/NyanKiyoshi/pytest-django-queries-bot/github/awstypes"
 	"github.com/NyanKiyoshi/pytest-django-queries-bot/github/consts"
 	"github.com/guregu/dynamo"
@@ -33,7 +33,7 @@ type Event struct {
 }
 
 func EventTable() dynamo.Table {
-	return db.Get().Table(generated.DynamoEventsTableName)
+	return db.Get().Table(config.DynamoEventsTableName)
 }
 
 // RetrieveEvent gets the event associated to a given hash

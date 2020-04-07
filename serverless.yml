@@ -31,22 +31,14 @@ provider:
   memorySize: 128
   region: ${self:custom.region}
   stage: ${self:custom.stage}
-
-# you can add statements to the Lambda function's IAM Role here
-#  iamRoleStatements:
-#    - Effect: "Allow"
-#      Action:
-#        - "s3:ListBucket"
-#      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ] ]  }
-#    - Effect: "Allow"
-#      Action:
-#        - "s3:PutObject"
-#      Resource:
-#        Fn::Join:
-#          - ""
-#          - - "arn:aws:s3:::"
-#            - "Ref" : "ServerlessDeploymentBucket"
-#            - "/*"
+  environment:
+    DYNAMO_AWS_REGION: "us-east-1"
+    DYNAMO_EVENTS_TABLE_NAME: "gh_hooks_events"
+    DYNAMO_PULL_REQ_TABLE_NAME: "gh_pull_requests"
+    GITHUB_APP_ID: ""
+    WEBHOOK_SECRET_KEY: "secret"
+    S3_AWS_REGION: "us-east-1"
+    S3_BUCKET: "abc"
 
 package:
  exclude:
@@ -62,8 +54,6 @@ functions:
       - http:
           path: ${env:GITHUB_WEBHOOK_URL}
           method: post
-    environment:
-      GITHUB_SECRET_KEY: ${env:GITHUB_SECRET_KEY}
 
   uploader:
     handler: bin/uploader
@@ -80,10 +70,6 @@ functions:
       - http:
           path: diff/
           method: post
-    environment:
-      GITHUB_SECRET_KEY: ${env:GITHUB_SECRET_KEY}
-      S3_BUCKET: ${self:custom.s3Bucket}
-      S3_AWS_REGION: ${env:S3_AWS_REGION}
 
 resources:
   Resources:

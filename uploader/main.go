@@ -3,7 +3,7 @@ package main
 import (
 	"crypto/hmac"
 	"fmt"
-	"github.com/NyanKiyoshi/pytest-django-queries-bot/generated"
+	"github.com/NyanKiyoshi/pytest-django-queries-bot/config"
 	"github.com/NyanKiyoshi/pytest-django-queries-bot/github/awstypes"
 	"github.com/NyanKiyoshi/pytest-django-queries-bot/github/models"
 	"github.com/aws/aws-lambda-go/events"
@@ -30,7 +30,7 @@ const ContentTypeHeaderNameLower = "content-type"
 
 // ExpectedSecretKey contains the expected secret key to receive
 // that will allow the request to be handled.
-var ExpectedSecretKey = []byte(generated.RequiredSecretKey)
+var ExpectedSecretKey = []byte(config.WebhookSecretKey)
 
 const jsonContentType = "application/json"
 
@@ -69,12 +69,8 @@ func Handler(ctx awstypes.Request) (Response, error) {
 
 	// Create a session to AWS to upload to the S3 bucket
 	awsSession, err := session.NewSession(&aws.Config{
-		Region: aws.String(generated.S3AwsRegion),
-		Credentials: credentials.NewStaticCredentials(
-			generated.S3AwsAccessKeyId,
-			generated.S3AwsSecretKey,
-			generated.S3AwsSessionToken,
-		),
+		Region:      aws.String(config.S3AwsRegion),
+		Credentials: credentials.NewEnvCredentials(),
 	})
 
 	if err != nil {
@@ -86,7 +82,7 @@ func Handler(ctx awstypes.Request) (Response, error) {
 	s3ContentType := string(jsonContentType) // copy the string because AWS wants a pointer
 
 	if _, err := uploader.Upload(&s3manager.UploadInput{
-		Bucket:      aws.String(generated.S3Bucket),
+		Bucket:      aws.String(config.S3Bucket),
 		Key:         &event.HashSHA1,
 		ContentType: &s3ContentType,
 		Body:        strings.NewReader(ctx.Body),

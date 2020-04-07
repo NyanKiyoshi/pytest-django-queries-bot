@@ -32,13 +32,13 @@ TBA.
 ### Compiling
 Note: you will need to edit `development.env` or creation `production.env`.
 
-Run `./compile.sh`
+Run `make build`
 
 ### Testing Locally
 1. Requires a python virtual environment
 1. Requires a working installation of docker
 1. `pip install aws-sam-cli`
-1. Run `./local-server.sh`
+1. Run `sam local start-api`
 
 ### Deploying to AWS
-1. Run `./deploy.sh`
+1. Run `sls deploy`

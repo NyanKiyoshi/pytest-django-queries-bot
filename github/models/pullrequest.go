@@ -1,8 +1,8 @@
 package models
 
 import (
+	"github.com/NyanKiyoshi/pytest-django-queries-bot/config"
 	"github.com/NyanKiyoshi/pytest-django-queries-bot/db"
-	"github.com/NyanKiyoshi/pytest-django-queries-bot/generated"
 	"github.com/guregu/dynamo"
 	"time"
 )
@@ -35,7 +35,7 @@ type PullRequest struct {
 }
 
 func PullRequestTable() dynamo.Table {
-	return db.Get().Table(generated.DynamoPullReqTableName)
+	return db.Get().Table(config.DynamoPullReqTableName)
 }
 
 func GetPullRequest(pullID int64) (*PullRequest, error) {

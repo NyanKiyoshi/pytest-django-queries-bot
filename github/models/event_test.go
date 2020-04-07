@@ -1,12 +1,12 @@
 package models
 
 import (
+	"github.com/NyanKiyoshi/pytest-django-queries-bot/config"
 	"github.com/stretchr/testify/assert"
-	"pytest-queries-bot/pytestqueries/generated"
 	"testing"
 )
 
 func TestEvent_Table(t *testing.T) {
 	table := EventTable()
-	assert.Equal(t, generated.DynamoEventsTableName, table.Name(), "Unexpected table name")
+	assert.Equal(t, config.DynamoEventsTableName, table.Name(), "Unexpected table name")
 }

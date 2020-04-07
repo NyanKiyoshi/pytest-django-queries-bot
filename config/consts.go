@@ -15,3 +15,5 @@ var WebhookSecretKey = []byte(os.Getenv("WEBHOOK_SECRET_KEY"))
 
 var S3AwsRegion = os.Getenv("S3_AWS_REGION")
 var S3Bucket = os.Getenv("S3_BUCKET")
+
+var LogLevel = os.Getenv("LOG_LEVEL")

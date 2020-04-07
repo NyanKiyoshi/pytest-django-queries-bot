@@ -4,7 +4,7 @@ import (
 	"github.com/NyanKiyoshi/pytest-django-queries-bot/github/awstypes"
 )
 
-const GithubEventHeader string = "X-GitHub-Event"
+const GithubEventHeader string = "x-github-event"
 const GithubEventCanonicalMIMEHeader string = "X-Github-Event"
 
 // Dispatch handles supported events. See https://developer.github.com/v3/activity/events/types/

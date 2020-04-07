@@ -38,7 +38,7 @@ provider:
     GITHUB_APP_ID: ""
     WEBHOOK_SECRET_KEY: "secret"
     S3_AWS_REGION: "us-east-1"
-    S3_BUCKET: "abc"
+    S3_BUCKET: ""
 
 package:
  exclude:

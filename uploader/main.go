@@ -30,7 +30,6 @@ const ContentTypeHeaderNameLower = "content-type"
 
 // ExpectedSecretKey contains the expected secret key to receive
 // that will allow the request to be handled.
-var ExpectedSecretKey = []byte(config.WebhookSecretKey)
 
 const jsonContentType = "application/json"
 
@@ -47,7 +46,7 @@ func Handler(ctx awstypes.Request) (Response, error) {
 	}
 
 	// Time based comparison of the received key to compare with the received key
-	if !hmac.Equal([]byte(secretKey), ExpectedSecretKey) {
+	if !hmac.Equal([]byte(secretKey), config.UploadSecretKey) {
 		return Response{StatusCode: 403, Body: "Bad credentials"}, fmt.Errorf("bad creds: %s", secretKey)
 	}
 
@@ -79,7 +78,7 @@ func Handler(ctx awstypes.Request) (Response, error) {
 
 	// Start a new uploader and upload the request body to the S3 bucket
 	uploader := s3manager.NewUploader(awsSession)
-	s3ContentType := string(jsonContentType) // copy the string because AWS wants a pointer
+	s3ContentType := jsonContentType // copy the string because AWS wants a pointer
 
 	if _, err := uploader.Upload(&s3manager.UploadInput{
 		Bucket:      aws.String(config.S3Bucket),

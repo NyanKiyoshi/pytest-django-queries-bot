@@ -15,7 +15,7 @@ func Handler(request awstypes.Request) (awstypes.Response, error) {
 	signature, ok := request.Headers[HmacHeader]
 	if !ok {
 		return awstypes.Response{
-			StatusCode: 403,
+			StatusCode: 401,
 			Body:       `{"message": "authentication failed: missing header"}`,
 			Headers: map[string]string{
 				"Content-Type": "application/json",
@@ -26,7 +26,7 @@ func Handler(request awstypes.Request) (awstypes.Response, error) {
 	ok = security.VerifySignature(config.WebhookSecretKey, signature, []byte(request.Body))
 	if !ok {
 		return awstypes.Response{
-			StatusCode: 403,
+			StatusCode: 401,
 			Body:       `{"message": "authentication failed"}`,
 			Headers: map[string]string{
 				"Content-Type": "application/json",

@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
+	"github.com/NyanKiyoshi/pytest-django-queries-bot/ci-tools/utils"
 	"github.com/jessevdk/go-flags"
 	"os"
-	"pytest-queries-bot/pytestqueries/ci-tools/utils"
 )
 
 func main() {

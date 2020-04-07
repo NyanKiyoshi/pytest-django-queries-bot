@@ -1,9 +1,9 @@
 package models
 
 import (
+	"github.com/NyanKiyoshi/pytest-django-queries-bot/config"
+	"github.com/NyanKiyoshi/pytest-django-queries-bot/db"
 	"github.com/guregu/dynamo"
-	"pytest-queries-bot/pytestqueries/db"
-	"pytest-queries-bot/pytestqueries/generated"
 	"time"
 )
 
@@ -17,6 +17,9 @@ type PullRequest struct {
 
 	// RepoName is the name of the target repository.
 	RepoName string `dynamodbav:"repo_name"`
+
+	// InstallationId is ID of the GitHub Application installation.
+	InstallationId int64 `dynamodbav:"installation_id"`
 
 	// PullRequestNumber is the pull request number in GitHub.
 	// This will be used to comment with results into GitHub.
@@ -32,7 +35,7 @@ type PullRequest struct {
 }
 
 func PullRequestTable() dynamo.Table {
-	return db.Get().Table(generated.DynamoPullReqTableName)
+	return db.Get().Table(config.DynamoPullReqTableName)
 }
 
 func GetPullRequest(pullID int64) (*PullRequest, error) {

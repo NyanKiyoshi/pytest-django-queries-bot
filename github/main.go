@@ -1,34 +1,40 @@
 package main
 
 import (
+	"github.com/NyanKiyoshi/pytest-django-queries-bot/config"
+	"github.com/NyanKiyoshi/pytest-django-queries-bot/github/awstypes"
+	"github.com/NyanKiyoshi/pytest-django-queries-bot/github/ghevents"
+	"github.com/NyanKiyoshi/pytest-django-queries-bot/github/security"
+	"github.com/NyanKiyoshi/pytest-django-queries-bot/logging"
 	"github.com/aws/aws-lambda-go/lambda"
-	"os"
-	"pytest-queries-bot/pytestqueries/github/awstypes"
-	"pytest-queries-bot/pytestqueries/github/ghevents"
-	"pytest-queries-bot/pytestqueries/github/security"
 )
 
-const HmacHeader string = "X-Hub-Signature"
-
-var secretKey = []byte(os.Getenv("GITHUB_SECRET_KEY"))
+const HmacHeader string = "x-hub-signature"
+const CanonicalMIMEHmacHeader string = "X-Hub-Signature"
 
 // Handler is our lambda handler invoked by the `lambda.Start` function call
 func Handler(request awstypes.Request) (awstypes.Response, error) {
+	logging.Logger.Debugf("%+v", request)
+
 	signature, ok := request.Headers[HmacHeader]
 	if !ok {
+		signature, ok = request.Headers[CanonicalMIMEHmacHeader]
+	}
+
+	if !ok {
 		return awstypes.Response{
-			StatusCode: 403,
-			Body:       `{"message": "authentication failed: missing header"}`,
+			StatusCode: 401,
+			Body:       `{"message": "authentication failed: missing header or empty signature"}`,
 			Headers: map[string]string{
 				"Content-Type": "application/json",
 			},
 		}, nil
 	}
 
-	ok = security.VerifySignature(secretKey, signature, []byte(request.Body))
+	ok = security.VerifySignature(config.WebhookSecretKey, signature, []byte(request.Body))
 	if !ok {
 		return awstypes.Response{
-			StatusCode: 403,
+			StatusCode: 401,
 			Body:       `{"message": "authentication failed"}`,
 			Headers: map[string]string{
 				"Content-Type": "application/json",

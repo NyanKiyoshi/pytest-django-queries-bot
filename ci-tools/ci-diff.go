@@ -5,11 +5,11 @@ package main
 import (
 	"bufio"
 	"flag"
+	"github.com/NyanKiyoshi/pytest-django-queries-bot/ci-tools/utils"
 	"github.com/caarlos0/env"
 	"log"
 	"net/url"
 	"os"
-	"pytest-queries-bot/pytestqueries/ci-tools/utils"
 )
 
 type config struct {

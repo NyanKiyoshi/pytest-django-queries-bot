@@ -1,11 +1,10 @@
 package upstream
 
 import (
-	"bufio"
 	"fmt"
 	"github.com/NyanKiyoshi/pytest-django-queries-bot/ci-tools/utils"
+	"io"
 	"net/http"
-	"os"
 )
 
 type Headers map[string]string
@@ -23,12 +22,14 @@ type Input interface {
 	// GetHeaders returns the base headers from GetBaseHeaders on top of additional headers to send
 	GetHeaders() *Headers
 
-	// PostFromStdin sends Stdin as body to the specified upstream
+	// PostFromReader sends Stdin as body to the specified upstream
 	PostFromStdin() (*http.Response, error)
 }
 
 func GetBaseHeaders(input Input) *Headers {
-	return &Headers{"X-Commit-Rev": input.GetRevision()}
+	headers := Headers{"X-Commit-Rev": input.GetRevision()}
+	headers["Content-Type"] = input.GetContentType()
+	return &headers
 }
 
 func ValidateInput(input Input) (err error) {
@@ -39,15 +40,13 @@ func ValidateInput(input Input) (err error) {
 	return
 }
 
-func PostFromStdin(input Input) (*http.Response, error) {
+func PostFromReader(input Input, reader io.Reader) (*http.Response, error) {
 	url := input.GetUpstreamUrl()
-	ct := input.GetContentType()
 	headers := input.GetHeaders()
 
 	return utils.SendUploadRequest(
 		url,
-		ct,
-		bufio.NewReader(os.Stdin),
+		reader,
 		(*map[string]string)(headers),
 	)
 }

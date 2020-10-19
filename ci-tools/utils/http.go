@@ -16,12 +16,11 @@ var Client = http.Client{
 	Timeout: 30 * time.Second,
 }
 
-func SendUploadRequest(url, contentType string, reader io.Reader, headers *map[string]string) (*http.Response, error) {
-
-	req, err := http.NewRequest("POST", url, reader)
+func HttpDo(method, url string, reader io.Reader, headers *map[string]string) (*http.Response, error) {
+	req, err := http.NewRequest(method, url, reader)
 
 	if err != nil {
-		return nil, fmt.Errorf("failed to create the request: %s", err)
+		return nil, fmt.Errorf("failed to create the request: %w", err)
 	}
 
 	if headers != nil {
@@ -30,20 +29,23 @@ func SendUploadRequest(url, contentType string, reader io.Reader, headers *map[s
 		}
 	}
 
-	req.Header.Add("Content-Type", contentType)
-
 	resp, err := Client.Do(req)
+	return resp, err
+}
+
+func SendUploadRequest(url string, reader io.Reader, headers *map[string]string) (*http.Response, error) {
+	resp, err := HttpDo("POST", url, reader, headers)
 
 	if err != nil {
 		return nil, fmt.Errorf("failed to upload: %s", err)
 	}
 
 	if resp != nil {
-		if resp.StatusCode > 299 || resp.StatusCode < 200 {
+		if resp.StatusCode >= 200 && resp.StatusCode < 300 {
 			return resp, nil
 		}
 		body, _ := ioutil.ReadAll(resp.Body)
-		return nil, fmt.Errorf("got %s: %s", resp.Status, body)
+		return nil, fmt.Errorf("got '%s': %s", resp.Status, body)
 	}
 
 	return nil, errors.New("we got no response and no error... Feels ignored")

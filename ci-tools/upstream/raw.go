@@ -1,12 +1,16 @@
 package upstream
 
-import "net/http"
+import (
+	"bufio"
+	"net/http"
+	"os"
+)
 
 // RawReportInput contains the input for uploading a raw JSON report
 type RawReportInput struct {
 	PostCommentUrl string
-	SHA1Revision string
-	SecretKey string
+	SHA1Revision   string
+	SecretKey      string
 }
 
 func (input *RawReportInput) GetUpstreamUrl() string {
@@ -31,5 +35,5 @@ func (input *RawReportInput) PostFromStdin() (*http.Response, error) {
 	if err := ValidateInput(input); err != nil {
 		return nil, err
 	}
-	return PostFromStdin(input)
+	return PostFromReader(input, bufio.NewReader(os.Stdin))
 }

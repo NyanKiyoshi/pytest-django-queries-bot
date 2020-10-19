@@ -24,6 +24,9 @@ type Input interface {
 
 	// PostFromReader sends Stdin as body to the specified upstream
 	PostFromStdin() (*http.Response, error)
+
+	// PostFromReader sends giving reader as body to the specified upstream
+	PostFromReader(r io.Reader) (*http.Response, error)
 }
 
 func GetBaseHeaders(input Input) *Headers {

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/NyanKiyoshi/pytest-django-queries-bot/config"
 	"github.com/bradleyfalzon/ghinstallation"
-	"github.com/google/go-github/github"
+	"github.com/google/go-github/v32/github"
 	"net/http"
 )
 

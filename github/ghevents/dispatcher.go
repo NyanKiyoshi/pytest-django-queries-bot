@@ -8,7 +8,7 @@ const GithubEventHeader string = "x-github-event"
 const GithubEventCanonicalMIMEHeader string = "X-Github-Event"
 
 // Dispatch handles supported events. See https://developer.github.com/v3/activity/events/types/
-// for the list of available events and data structures--or https://godoc.org/github.com/google/go-github/github.
+// for the list of available events and data structures--or https://godoc.org/github.com/google/go-github/v32/github.
 func Dispatch(request *awstypes.Request) (awstypes.Response, error) {
 	event, ok := request.Headers[GithubEventHeader]
 	if !ok {

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/NyanKiyoshi/pytest-django-queries-bot/ci-tools/upstream"
 	"github.com/NyanKiyoshi/pytest-django-queries-bot/ci-tools/utils"
-	"github.com/google/go-github/github"
+	"github.com/google/go-github/v32/github"
 	"github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/url"
@@ -44,7 +44,7 @@ Base comparison is {{ .BaseSHA }}.
 `))
 
 func writeBaseReport(targetPath string, body []byte) (err error) {
-	if err = ioutil.WriteFile(targetPath, body, 0660); err != nil {
+	if err = ioutil.WriteFile(targetPath, body, 0640); err != nil {
 		err = fmt.Errorf("failed to write base report to '%s': %w", targetPath, err)
 	}
 	return
@@ -71,7 +71,7 @@ type Context struct {
 	BaseReportMissing bool
 	DiffCount         uint
 	RawDiff           []byte
-	HeadLabel string
+	HeadLabel         string
 }
 
 func getDiffCount(diff []byte) uint {
@@ -167,7 +167,7 @@ func (h *PullRequestHandler) Invoke() (err error) {
 
 	body, err := h.createCommentBody(&Context{
 		HeadSHA:           *head,
-		HeadLabel: *event.PullRequest.Head.Label,
+		HeadLabel:         *event.PullRequest.Head.Label,
 		BaseSHA:           *base,
 		BaseReportMissing: h.isBaseMissing,
 		DiffCount:         getDiffCount(diff),
@@ -184,7 +184,7 @@ func (h *PullRequestHandler) Invoke() (err error) {
 		SHA1Revision:   *head,
 	}
 	if _, err = input.PostFromReader(bytes.NewReader(body)); err != nil {
-		err = fmt.Errorf("failed to write diff comment from stdin: %w", err)
+		err = fmt.Errorf("failed to post diff comment from file: %w", err)
 	}
 	return
 }

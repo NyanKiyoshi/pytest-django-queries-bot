@@ -7,7 +7,7 @@ import (
 	"github.com/NyanKiyoshi/pytest-django-queries-bot/github/models"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
-	"github.com/google/go-github/github"
+	"github.com/google/go-github/v32/github"
 )
 
 // Response is of type APIGatewayProxyResponse since we're leveraging the

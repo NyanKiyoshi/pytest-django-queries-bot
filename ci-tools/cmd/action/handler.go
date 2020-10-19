@@ -40,6 +40,17 @@ func SetUpHandlers() *integration.HandlerMap {
 			PostDiffCommentUrl:        getUrlFromEnv("DIFF_ENDPOINT"),
 			HeadReportLocation:        getFromEnv("QUERIES_RESULTS_PATH"),
 		})
+	handlers.Register(
+		"push", &integration.PushHandler{
+			Logger: logger,
+			GetLazySecretsFunc: func() *integration.PushHandlerLazySecrets {
+				return &integration.PushHandlerLazySecrets{
+					PostPayloadEndpointUrl: getUrlFromEnv("QUERIES_UPLOAD_ENDPOINT_URL"),
+					PostKey:                getFromEnv("QUERIES_UPLOAD_SECRET"),
+				}
+			},
+			HeadReportLocation: getFromEnv("QUERIES_RESULTS_PATH"),
+		})
 	return handlers
 }
 

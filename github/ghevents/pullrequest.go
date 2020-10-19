@@ -5,7 +5,7 @@ import (
 	"errors"
 	"github.com/NyanKiyoshi/pytest-django-queries-bot/github/awstypes"
 	"github.com/NyanKiyoshi/pytest-django-queries-bot/github/models"
-	"github.com/google/go-github/github"
+	"github.com/google/go-github/v32/github"
 	"time"
 )
 

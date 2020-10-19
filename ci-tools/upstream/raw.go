@@ -2,6 +2,7 @@ package upstream
 
 import (
 	"bufio"
+	"io"
 	"net/http"
 	"os"
 )
@@ -36,4 +37,11 @@ func (input *RawReportInput) PostFromStdin() (*http.Response, error) {
 		return nil, err
 	}
 	return PostFromReader(input, bufio.NewReader(os.Stdin))
+}
+
+func (input *RawReportInput) PostFromReader(r io.Reader) (*http.Response, error) {
+	if err := ValidateInput(input); err != nil {
+		return nil, err
+	}
+	return PostFromReader(input, r)
 }

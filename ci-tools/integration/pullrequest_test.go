@@ -56,8 +56,9 @@ unchanged func                  1               1                   0
 
 func TestTemplate(t *testing.T) {
 	expected := `
-Here is the report for 6db0fab78656207b1040cc6eae4b41cc1ab4b736
-Missing base report (f6d1e2b4b06b7ac7a40783b6879f66840cf9e75d). The results couldn't be compared.<details>
+Here is the report for 6db0fab78656207b1040cc6eae4b41cc1ab4b736 (owner:my/branch)
+Missing base report (f6d1e2b4b06b7ac7a40783b6879f66840cf9e75d). The results couldn't be compared.
+<details>
 <summary><b>Found 3 differences!</b> (click me)</summary>
 <p>
 
@@ -70,6 +71,7 @@ bar
 </details>
 `
 	ctx := Context{
+		HeadLabel: "owner:my/branch",
 		HeadSHA:           "6db0fab78656207b1040cc6eae4b41cc1ab4b736",
 		BaseSHA:           "f6d1e2b4b06b7ac7a40783b6879f66840cf9e75d",
 		BaseReportMissing: true,

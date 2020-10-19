@@ -18,12 +18,12 @@ import (
 const mdCodeBlock = "```"
 
 var commentTemplate = template.Must((&template.Template{}).Parse(`
-Here is the report for {{ .HeadSHA }}
-{{- if .BaseReportMissing }}
+Here is the report for {{ .HeadSHA }} ({{ .HeadLabel }})
+{{ if .BaseReportMissing -}}
 Missing base report ({{ .BaseSHA }}). The results couldn't be compared.
-{{- else -}}
+{{ else -}}
 Base comparison is {{ .BaseSHA }}.
-{{- end -}}
+{{ end -}}
 
 <details>
 <summary>
@@ -44,7 +44,7 @@ Base comparison is {{ .BaseSHA }}.
 `))
 
 func writeBaseReport(targetPath string, body []byte) (err error) {
-	if err = ioutil.WriteFile(targetPath, body, 0500); err != nil {
+	if err = ioutil.WriteFile(targetPath, body, 0660); err != nil {
 		err = fmt.Errorf("failed to write base report to '%s': %w", targetPath, err)
 	}
 	return
@@ -71,6 +71,7 @@ type Context struct {
 	BaseReportMissing bool
 	DiffCount         uint
 	RawDiff           []byte
+	HeadLabel string
 }
 
 func getDiffCount(diff []byte) uint {
@@ -166,6 +167,7 @@ func (h *PullRequestHandler) Invoke() (err error) {
 
 	body, err := h.createCommentBody(&Context{
 		HeadSHA:           *head,
+		HeadLabel: *event.PullRequest.Head.Label,
 		BaseSHA:           *base,
 		BaseReportMissing: h.isBaseMissing,
 		DiffCount:         getDiffCount(diff),

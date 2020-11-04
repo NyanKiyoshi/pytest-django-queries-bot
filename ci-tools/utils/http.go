@@ -48,5 +48,5 @@ func SendUploadRequest(url string, reader io.Reader, headers *map[string]string)
 		return nil, fmt.Errorf("got '%s': %s", resp.Status, body)
 	}
 
-	return nil, errors.New("we got no response and no error... Feels ignored")
+	return nil, errors.New("we got no response and no error")
 }

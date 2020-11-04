@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"errors"
 	"fmt"
 	"github.com/NyanKiyoshi/pytest-django-queries-bot/ci-tools/upstream"
 	"github.com/google/go-github/v32/github"
@@ -49,6 +50,10 @@ func (h *PushHandler) Invoke() (err error) {
 		PostCommentUrl: h.Secrets.PostPayloadEndpointUrl.String(),
 		SHA1Revision:   head,
 		SecretKey:      h.Secrets.PostKey,
+	}
+
+	if input.PostCommentUrl == "" {
+		err = errors.New("upstream URL is empty, aborting raw post of push results")
 	}
 
 	fp, err := os.OpenFile(h.HeadReportLocation, os.O_RDONLY, 0)

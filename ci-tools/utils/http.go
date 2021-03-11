@@ -37,7 +37,7 @@ func SendUploadRequest(url string, reader io.Reader, headers *map[string]string)
 	resp, err := HttpDo("POST", url, reader, headers)
 
 	if err != nil {
-		return nil, fmt.Errorf("failed to upload: %s", err)
+		return nil, fmt.Errorf("failed to upload: %w", err)
 	}
 
 	if resp != nil {

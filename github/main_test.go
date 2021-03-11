@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/NyanKiyoshi/pytest-django-queries-bot/config"
 	"github.com/NyanKiyoshi/pytest-django-queries-bot/github/awstypes"
 	"github.com/NyanKiyoshi/pytest-django-queries-bot/github/ghevents"
 	"github.com/NyanKiyoshi/pytest-django-queries-bot/github/security"
@@ -12,22 +13,34 @@ import (
 var fakeSecretKey = []byte("secret")
 
 func init() {
-	secretKey = fakeSecretKey
+	config.WebhookSecretKey = fakeSecretKey
 }
 
 var invalidRequests = []struct {
-	testName string
-	request  awstypes.Request
+	testName     string
+	request      awstypes.Request
+	expectedBody string
 }{
-	{testName: "missing header", request: awstypes.Request{}},
-	{testName: "invalid secret key", request: awstypes.Request{Headers: map[string]string{HmacHeader: "invalid"}}},
+	{
+		testName:     "missing header",
+		request:      awstypes.Request{},
+		expectedBody: "{\"message\": \"authentication failed: missing header or empty signature\"}",
+	},
+	{
+		testName:     "invalid secret key",
+		request:      awstypes.Request{Headers: map[string]string{HmacHeader: "invalid"}},
+		expectedBody: "{\"message\": \"authentication failed\"}",
+	},
 }
 
 func TestHandler_unauthorized_request_returns_denied(t *testing.T) {
 	expected := awstypes.Response{
-		StatusCode: 403,
+		StatusCode:      401,
+		Headers:         map[string]string{"Content-Type": "application/json"},
+		IsBase64Encoded: false,
 	}
 	for _, tt := range invalidRequests {
+		expected.Body = tt.expectedBody
 		t.Run(tt.testName, func(t *testing.T) {
 			response, err := Handler(tt.request)
 			assert.Nil(t, err, "Should not have an error")

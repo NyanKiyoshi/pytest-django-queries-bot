@@ -35,7 +35,7 @@ func synchronizePR(payload *github.PullRequestEvent) (*awstypes.Response, error)
 			PullRequestID:     *data.ID,
 			PullRequestNumber: *data.Number,
 			OwnerName:         *data.Base.Repo.Owner.Login,
-			RepoName:          *data.Head.Repo.Name,
+			RepoName:          *data.Base.Repo.Name,
 			EntryDate:         time.Now(),
 		}
 		err = models.PullRequestTable().Put(pr).Run()

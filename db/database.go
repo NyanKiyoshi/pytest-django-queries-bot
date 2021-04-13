@@ -13,7 +13,7 @@ func Get() *dynamo.DB {
 	cfg := aws.NewConfig().
 		WithRegion(config.DynamoAwsRegion).
 		WithCredentials(credentials.NewEnvCredentials()).
-		WithLogLevel(aws.LogDebugWithHTTPBody)
+		WithLogLevel(aws.LogDebugWithRequestErrors)
 	db := dynamo.New(session.New(), cfg)
 	return db
 }

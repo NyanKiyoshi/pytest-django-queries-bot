@@ -1,13 +1,11 @@
-.PHONY: build clean deploy
+.PHONY: build generate-checksum
 
 build:
+	mkdir -p dist/
+	rm dist/*
 	go mod tidy
-	env GOOS=linux go build -ldflags="-s -w" -o bin/github github/main.go
-	env GOOS=linux go build -ldflags="-s -w" -o bin/uploader uploader/main.go
-	env GOOS=linux go build -ldflags="-s -w" -o bin/diff-uploader diff/main.go
+	env GOOS=linux go build -ldflags="-s -w" -o dist/github github/main.go
+	env GOOS=linux go build -ldflags="-s -w" -o dist/uploader uploader/main.go
+	env GOOS=linux go build -ldflags="-s -w" -o dist/diff-uploader diff/main.go
+	make -C ./ci-tools build
 
-clean:
-	rm -rf ./bin
-
-deploy: clean build
-	sls deploy --verbose

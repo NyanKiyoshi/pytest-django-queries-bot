@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/NyanKiyoshi/pytest-django-queries-bot/github/awstypes"
 	"github.com/NyanKiyoshi/pytest-django-queries-bot/github/client"
 	"github.com/NyanKiyoshi/pytest-django-queries-bot/github/models"
@@ -30,7 +31,12 @@ func Handler(request awstypes.Request) (Response, error) {
 	}
 
 	if event.DiffUploaded {
-		return Response{StatusCode: 403, Body: "A diff was already uploaded for this revision"}, nil
+		logging.Logger.Warningf(
+			"A diff was already uploaded on %s for the revision: %s",
+			event.EntryDate,
+			event.HashSHA1,
+		)
+		return Response{StatusCode: 200, Body: "A diff was already uploaded for this revision"}, nil
 	}
 
 	ghClient, ctx := client.GetClient(pr.InstallationId)
@@ -42,7 +48,6 @@ func Handler(request awstypes.Request) (Response, error) {
 		_, _, err := ghClient.Issues.EditComment(
 			*ctx, pr.OwnerName, pr.RepoName, pr.GitHubCommentID, &comment,
 		)
-
 		if err != nil {
 			logging.Logger.Errorf("Failed to create comment (command ID %d): %+v", pr.GitHubCommentID, err)
 			return Response{
@@ -59,7 +64,6 @@ func Handler(request awstypes.Request) (Response, error) {
 		newComment, _, err := ghClient.Issues.CreateComment(
 			*ctx, pr.OwnerName, pr.RepoName, pr.PullRequestNumber, &comment,
 		)
-
 		if err != nil {
 			logging.Logger.Errorf("Failed to create comment (command ID %d): %+v", pr.GitHubCommentID, err)
 			return Response{

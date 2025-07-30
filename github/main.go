@@ -46,5 +46,6 @@ func Handler(request awstypes.Request) (awstypes.Response, error) {
 }
 
 func main() {
+	logging.Logger.Infof("Booting...")
 	lambda.Start(Handler)
 }

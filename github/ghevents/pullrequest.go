@@ -3,10 +3,12 @@ package ghevents
 import (
 	"encoding/json"
 	"errors"
+	"time"
+
 	"github.com/NyanKiyoshi/pytest-django-queries-bot/github/awstypes"
 	"github.com/NyanKiyoshi/pytest-django-queries-bot/github/models"
+	"github.com/NyanKiyoshi/pytest-django-queries-bot/logging"
 	"github.com/google/go-github/v32/github"
-	"time"
 )
 
 func synchronizePR(payload *github.PullRequestEvent) (*awstypes.Response, error) {
@@ -21,15 +23,23 @@ func synchronizePR(payload *github.PullRequestEvent) (*awstypes.Response, error)
 		PullRequestID: *data.ID,
 	}
 	err := models.EventTable().Put(event).Run()
-
 	if err != nil {
+		logging.Logger.Errorf(
+			"Failed to push synchronize event to dynamodb (PR ID %d, head's SHA: %s): %+v",
+			*data.ID,
+			*data.Head.SHA,
+			err,
+		)
 		return nil, err
 	}
 
 	pr := &models.PullRequest{}
 	err = models.PullRequestTable().Get("PullRequestID", *data.ID).One(pr)
 
-	if pr.PullRequestNumber == 0 {
+	if pr.PullRequestNumber == 0 || err != nil {
+		logging.Logger.Infof(
+			"Didn't find PullRequestID=%d in dynamodb, creating a new entry instead (%+v)", *data.ID, err,
+		)
 		pr := models.PullRequest{
 			InstallationId:    *payload.Installation.ID,
 			PullRequestID:     *data.ID,
@@ -39,10 +49,10 @@ func synchronizePR(payload *github.PullRequestEvent) (*awstypes.Response, error)
 			EntryDate:         time.Now(),
 		}
 		err = models.PullRequestTable().Put(pr).Run()
-	}
-
-	if err != nil {
-		return nil, err
+		if err != nil {
+			logging.Logger.Errorf("Failed to add pull request into DynamoDB (PR ID %d): %+v", pr.PullRequestNumber, err)
+			return nil, err
+		}
 	}
 
 	return &awstypes.Response{
@@ -58,6 +68,7 @@ func pullrequest(request *awstypes.Request) (awstypes.Response, error) {
 
 	if err = json.Unmarshal([]byte(request.Body), &payload); err != nil ||
 		payload.Action == nil {
+		logging.Logger.Warningf("Received invalid JSON: %+v", err)
 		return awstypes.Response{StatusCode: 400}, err
 	}
 

@@ -3,16 +3,18 @@ package main
 import (
 	"crypto/hmac"
 	"fmt"
+	"strings"
+
 	"github.com/NyanKiyoshi/pytest-django-queries-bot/config"
 	"github.com/NyanKiyoshi/pytest-django-queries-bot/github/awstypes"
 	"github.com/NyanKiyoshi/pytest-django-queries-bot/github/models"
+	"github.com/NyanKiyoshi/pytest-django-queries-bot/logging"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
-	"strings"
 )
 
 // Response is of type APIGatewayProxyResponse since we're leveraging the
@@ -23,10 +25,12 @@ type Response events.APIGatewayProxyResponse
 
 // SecretKeyHeaderName defines the header that contains
 // the secret key for uploading a file.
-const SecretKeyHeaderName = "X-Secret-Key"
-const SecretKeyHeaderNameLower = "x-secret-key"
-const ContentTypeHeaderName = "Content-Type"
-const ContentTypeHeaderNameLower = "content-type"
+const (
+	SecretKeyHeaderName        = "X-Secret-Key"
+	SecretKeyHeaderNameLower   = "x-secret-key"
+	ContentTypeHeaderName      = "Content-Type"
+	ContentTypeHeaderNameLower = "content-type"
+)
 
 // ExpectedSecretKey contains the expected secret key to receive
 // that will allow the request to be handled.
@@ -61,8 +65,8 @@ func Handler(ctx awstypes.Request) (Response, error) {
 
 	// Retrieve the event to ensure the request is correct and expected
 	event, err := models.CheckEvent(&ctx)
-
 	if err != nil {
+		logging.Logger.Warningf("Didn't find an event, aborting due to error: %+v", err)
 		return Response{StatusCode: 400, Body: err.Error()}, err
 	}
 
@@ -71,8 +75,8 @@ func Handler(ctx awstypes.Request) (Response, error) {
 		Region:      aws.String(config.S3AwsRegion),
 		Credentials: credentials.NewEnvCredentials(),
 	})
-
 	if err != nil {
+		logging.Logger.Errorf("Failed to create AWS SDK session: %+v", err)
 		return Response{StatusCode: 500, Body: "Failed to start uploader"}, err
 	}
 
@@ -86,12 +90,14 @@ func Handler(ctx awstypes.Request) (Response, error) {
 		ContentType: &s3ContentType,
 		Body:        strings.NewReader(ctx.Body),
 	}); err != nil {
+		logging.Logger.Errorf("Failed to upload to S3 (head SHA: %s): %+v", event.HashSHA1, err)
 		return Response{StatusCode: 500, Body: "Failed to upload"}, err
 	}
 
 	if err := models.EventTable().Update("HashSHA1", event.HashSHA1).
 		Set("HasRapport", true).
 		Run(); err != nil {
+		logging.Logger.Errorf("Failed to update SHA1 hash in dynamodbto (head SHA: %s): %+v", event.HashSHA1, err)
 		return Response{StatusCode: 500, Body: "Failed to update event data"}, err
 	}
 

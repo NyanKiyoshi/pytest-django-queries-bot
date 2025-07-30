@@ -5,6 +5,7 @@ import (
 	"github.com/NyanKiyoshi/pytest-django-queries-bot/github/awstypes"
 	"github.com/NyanKiyoshi/pytest-django-queries-bot/github/client"
 	"github.com/NyanKiyoshi/pytest-django-queries-bot/github/models"
+	"github.com/NyanKiyoshi/pytest-django-queries-bot/logging"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/google/go-github/v32/github"
@@ -43,6 +44,7 @@ func Handler(request awstypes.Request) (Response, error) {
 		)
 
 		if err != nil {
+			logging.Logger.Errorf("Failed to create comment (command ID %d): %+v", pr.GitHubCommentID, err)
 			return Response{
 				StatusCode: 500,
 				Body:       fmt.Sprintf("Failed to create comment %d...", pr.GitHubCommentID),
@@ -59,6 +61,7 @@ func Handler(request awstypes.Request) (Response, error) {
 		)
 
 		if err != nil {
+			logging.Logger.Errorf("Failed to create comment (command ID %d): %+v", pr.GitHubCommentID, err)
 			return Response{
 				StatusCode: 500,
 				Body:       fmt.Sprintf("Failed to create comment %d...", pr.GitHubCommentID),
